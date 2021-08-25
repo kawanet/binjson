@@ -1,0 +1,19 @@
+{
+  "include": [
+    "../src"
+  ],
+  "compilerOptions": {
+    "module": "AMD",
+    "moduleResolution": "Node",
+    "noImplicitAny": true,
+    "noImplicitReturns": false,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "removeComments": true,
+    "outFile": "../build/binjson.amd.js",
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "target": "ES5"
+  }
+}
