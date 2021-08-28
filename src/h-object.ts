@@ -4,9 +4,7 @@
 
 import type {binjson} from "../types/binjson";
 import {Tag} from "./enum";
-import * as P from "./h-primitive";
-
-const {hUndefined} = P;
+import {hUndefined} from "./h-misc";
 
 /**
  * Object

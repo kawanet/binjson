@@ -5,14 +5,14 @@
 import type {binjson} from "../types/binjson";
 
 import * as A from "./h-array";
-import * as B from "./h-buffer";
+import * as B from "./h-boolean";
 import * as M from "./h-misc";
 import * as N from "./h-number";
 import * as O from "./h-object";
-import * as P from "./h-primitive";
 import * as S from "./h-string";
-import * as T from "./h-typedarray";
 import * as W from "./h-widestring";
+import * as XB from "./h-buffer";
+import * as XT from "./h-typedarray";
 
 type ReadHandler<T> = binjson.ReadHandler<T>;
 type WriteHandler<T> = binjson.WriteHandler<T>;
@@ -20,14 +20,14 @@ type Handler<T> = binjson.Handler<T>;
 type WriteRouter<T> = (value: T) => binjson.WriteHandler<T>;
 
 const {hBeginDenseJSArray, hEndDenseJSArray} = A;
-const {hNodeBuffer} = B;
-const {hDate, hNull, hRegExp} = M;
+const {hFalse, hTrue} = B;
+const {hDate, hNull, hRegExp, hUndefined} = M;
 const {hBigInt, hDouble, hInt32} = N;
 const {hBeginJSObject, hEndJSObject} = O;
-const {hFalse, hTrue, hUndefined} = P;
 const {hString} = S;
-const {hArrayBufferView} = T;
 const {hWideString} = W;
+const {hNodeBuffer} = XB;
+const {hArrayBufferView} = XT;
 
 const rBoolean: WriteRouter<boolean> = value => value ? hTrue : hFalse;
 

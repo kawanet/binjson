@@ -8,6 +8,27 @@ import {Tag} from "./enum";
 type Handler<T> = binjson.Handler<T>;
 
 /**
+ * undefined
+ */
+
+export const hUndefined: Handler<undefined> = {
+    tag: Tag.kUndefined,
+
+    read: (buf) => {
+        buf.pos++;
+        return undefined;
+    },
+
+    match: (value) => (value === undefined),
+
+    write: (buf) => {
+        buf = buf.prepare(1);
+        buf.tag(Tag.kUndefined);
+        buf.pos++;
+    },
+};
+
+/**
  * Date
  */
 
