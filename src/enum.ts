@@ -28,7 +28,6 @@ export const enum Tag {
     // SerializationTag
     // https://github.com/v8/v8/blob/master/src/objects/value-serializer.cc
     kUndefined = 0x5f, // _
-    kNull = 0x30, // 0
     kTrue = 0x54, // T
     kFalse = 0x46, // F
     kInt32 = 0x49, // I
@@ -36,6 +35,9 @@ export const enum Tag {
     kBigInt = 0x5A, // Z
 
     // original
+    kNull = 0x3F, // ?
+    kNumber0 = 0x30, // 0
+    kString0 = 0x60, // `
     kString16 = 0x53, // S
     kString32 = 0x13, // ^S
     kWideString16 = 0x57, // W

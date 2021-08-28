@@ -12,11 +12,20 @@ describe(TITLE, () => {
         assert.deepEqual(decoded, true);
     });
 
-    test("0", 1, null);
+    test("?", 1, null);
     test("T", 1, true);
     test("F", 1, false);
-    test("I", 6, 0);
-    test("I", 6, 1);
+    test("0", 1, 0);
+    test("1", 1, 1);
+    test("2", 1, 2);
+    test("3", 1, 3);
+    test("4", 1, 4);
+    test("5", 1, 5);
+    test("6", 1, 6);
+    test("7", 1, 7);
+    test("8", 1, 8);
+    test("9", 1, 9);
+    test("I", 6, 10);
     test("I", 6, -1);
     test("N", 10, 0.5);
     test("N", 10, -0.5);

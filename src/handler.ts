@@ -21,7 +21,7 @@ type WriteRouter<T> = (value: T) => binjson.WriteHandler<T>;
 const {hArrayBegin, hArrayEnd} = A;
 const {hFalse, hTrue} = B;
 const {hDate, hNull, hRegExp, hUndefined} = M;
-const {hBigInt, hDouble, hInt32} = N;
+const {hBigInt, hDouble, hInt32, hNumber0} = N;
 const {hObjectBegin, hObjectEnd} = O;
 const {hString} = S;
 const {hWideString} = W;
@@ -38,7 +38,9 @@ const hBooleanObject: WriteHandler<boolean | Boolean> = {
     },
 };
 
-const rNumber: WriteRouter<number> = value => ((value | 0) == value) ? hInt32 : isFinite(value) ? hDouble : hNull;
+// const rNumber: WriteRouter<number> = value => ((value | 0) == value) ? hInt32 : isFinite(value) ? hDouble : hNull;
+
+const rNumber: WriteRouter<number> = v => ((v | 0) == v) ? ((0 <= v && v <= 9) ? hNumber0 : hInt32) : (isFinite(v) ? hDouble : hNull);
 
 const hNumberObject: WriteHandler<number | Number> = {
     allowToJSON: true,
@@ -90,6 +92,7 @@ export function initReadRouter(): (tag: number) => ReadHandler<any> {
         hInt32,
         hNodeBuffer,
         hNull,
+        hNumber0,
         hObjectBegin,
         hObjectEnd,
         hRegExp,
