@@ -13,8 +13,8 @@ import * as S from "./h-string";
 import * as T from "./h-typedarray";
 import * as W from "./h-widestring";
 
-type WriteHandler<T> = binjson.WriteHandler<T>;
-type WriteRouter<T> = (value: T) => binjson.WriteHandler<T>;
+export type WriteHandler<T> = binjson.WriteHandler<T>;
+export type WriteRouter = (value: any) => binjson.WriteHandler<any>;
 
 const {hArrayBegin} = A;
 const {hFalse, hTrue} = B;
@@ -25,7 +25,7 @@ const {hString} = S;
 const {hArrayBufferView} = T;
 const {hWideString} = W;
 
-const rBoolean: WriteRouter<boolean> = value => value ? hTrue : hFalse;
+const rBoolean: WriteRouter = (v: boolean) => (v ? hTrue : hFalse);
 
 const hBooleanObject: WriteHandler<boolean | Boolean> = {
     allowToJSON: true,
@@ -35,9 +35,7 @@ const hBooleanObject: WriteHandler<boolean | Boolean> = {
     },
 };
 
-// const rNumber: WriteRouter<number> = value => ((value | 0) == value) ? hInt32 : isFinite(value) ? hDouble : hNull;
-
-const rNumber: WriteRouter<number> = v => ((v | 0) == v) ? ((0 <= v && v <= 9) ? hNumber0 : hInt32) : (isFinite(v) ? hDouble : hNull);
+const rNumber: WriteRouter = (v: number) => ((v | 0) == v) ? ((0 <= v && v <= 9) ? hNumber0 : hInt32) : (isFinite(v) ? hDouble : hNull);
 
 const hNumberObject: WriteHandler<number | Number> = {
     allowToJSON: true,
@@ -52,7 +50,7 @@ const hNumberObject: WriteHandler<number | Number> = {
  * hTwoByteString has better performance on long string.
  */
 
-const rString: WriteRouter<string> = value => ((value.length <= 10) ? hString : hWideString);
+const rString: WriteRouter = (v: string) => ((v.length <= 10) ? hString : hWideString);
 
 const hStringObject: WriteHandler<string | String> = {
     allowToJSON: true,
@@ -106,3 +104,34 @@ export function initWriteRouter(): (value: any) => WriteHandler<any> {
 }
 
 const isArrayBufferView = hArrayBufferView.match;
+
+export class WriteRoute {
+    route: WriteRouter;
+
+    add(handler: WriteHandler<any> | WriteHandler<any>[]): void {
+        if (Array.isArray(handler)) {
+            return handler.slice().reverse().forEach(h => this.add(h));
+        }
+
+        if (!handler.match) return;
+        this.route = ADD(handler, this.route);
+    }
+
+    router(base?: WriteRouter): WriteRouter {
+        return MERGE(this.route, base);
+    }
+}
+
+const ADD = (handler: WriteHandler<any>, router: WriteRouter): WriteRouter => {
+    if (router) {
+        return (value) => handler.match(value) ? handler : router(value);
+    } else {
+        return (value) => handler.match(value) ? handler : null;
+    }
+};
+
+const MERGE = (r1: WriteRouter, r2: WriteRouter): WriteRouter => {
+    if (r1 && r2) return (value) => (r1(value) || r2(value));
+    return r1 || r2;
+};
+

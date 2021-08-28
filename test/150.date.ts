@@ -6,7 +6,7 @@ import {binJSON, handlers} from "../";
 const TITLE = __filename.split("/").pop();
 
 describe(TITLE, () => {
-    const myJSON = binJSON.create({handler: handlers.Date});
+    const myJSON = binJSON.extend({handler: handlers.Date});
 
     it("kDate", () => {
         const raw = new Date(0);

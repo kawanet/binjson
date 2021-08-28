@@ -6,8 +6,8 @@ import {binjson, binJSON, handlers} from "../";
 const TITLE = __filename.split("/").pop();
 
 describe(TITLE, () => {
-    const utf8JSON = binJSON.create({handler: handlers.UTF8});
-    const utf16JSON = binJSON.create({handler: handlers.UTF16});
+    const utf8JSON = binJSON.extend({handler: handlers.UTF8});
+    const utf16JSON = binJSON.extend({handler: handlers.UTF16});
 
     const onebyte = "123456789.".repeat(10); // 100 bytes
     const twobyte = "１２３４５６７８９．".repeat(5); // 100 bytes

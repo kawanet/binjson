@@ -35,7 +35,7 @@ describe(TITLE, () => {
     };
 
     it("handler", () => {
-        const myJSON = binJSON.create({handler: myHandler});
+        const myJSON = binJSON.extend({handler: myHandler});
         const data = {foo: new MyClass(123), bar: new MyClass(456)};
 
         assert.equal(data.foo.toString(), "[123]");
@@ -52,7 +52,7 @@ describe(TITLE, () => {
     });
 
     it("handlers", () => {
-        const myJSON = binJSON.create({handler: [myHandler, handlers.Date]});
+        const myJSON = binJSON.extend({handler: [myHandler, handlers.Date]});
         const date = new Date("2021-08-21T00:00:00.000Z");
         const data = {foo: new MyClass(789), date: date};
 

@@ -13,6 +13,9 @@ import {hBigInt, hDouble, hInt32, hNumber0} from "./h-number";
 import {hFalse, hTrue} from "./h-boolean";
 import {hObjectBegin, hObjectEnd} from "./h-object";
 
+export type ReadHandler<T> = binjson.ReadHandler<T>;
+export type ReadRouter = (tag: number) => binjson.ReadHandler<any>;
+
 export const handlers: binjson.Handlers = {
     Buffer: hBuffer,
     Date: hDate,
@@ -26,10 +29,9 @@ export const handlers: binjson.Handlers = {
  * default router for `decode()`.
  */
 
-export function initReadRouter(): (tag: number) => binjson.ReadHandler<any> {
-    const readers: binjson.ReadHandler<any>[] = [];
-
-    [
+export function initReadRouter(): ReadRouter {
+    const route = new ReadRoute();
+    route.add([
         hArrayBegin,
         hArrayBufferView,
         hArrayEnd,
@@ -48,14 +50,46 @@ export function initReadRouter(): (tag: number) => binjson.ReadHandler<any> {
         hTrue,
         hUndefined,
         hWideString,
-    ].forEach(h => {
-        const {tag} = h;
-        if (Array.isArray(tag)) {
-            for (const t of tag) readers[t] = h;
-        } else {
-            readers[tag] = h
-        }
-    });
+    ]);
 
-    return tag => readers[tag];
+    return route.router();
+}
+
+export class ReadRoute {
+    private readers: ReadHandler<any>[] = [];
+    private extended: { [key: string]: ReadHandler<any> } = {};
+
+    add(handler: ReadHandler<any> | ReadHandler<any>[]): void {
+        if (Array.isArray(handler)) {
+            handler.slice().reverse().forEach(h => this.add(h));
+        } else if (handler) {
+            this.addTag(handler.tag, handler);
+            this.addSubTag(handler.subtag, handler);
+        }
+    }
+
+    private addTag(tag: number | number[], handler: ReadHandler<any>): void {
+        if (Array.isArray(tag)) {
+            tag.forEach(t => this.addTag(t, handler));
+        } else if (tag != null) {
+            this.readers[tag & 255] = handler;
+        }
+    }
+
+    private addSubTag(subtag: number | number[], handler: ReadHandler<any>): void {
+        if (Array.isArray(subtag)) {
+            subtag.forEach(t => this.addSubTag(t, handler));
+        } else if (subtag != null) {
+            this.extended[subtag >>> 0] = handler;
+        }
+    }
+
+    router(base?: ReadRouter): (tag: number) => ReadHandler<any> {
+        const {readers} = this;
+        if (base) {
+            return tag => (readers[tag] || base(tag));
+        } else {
+            return tag => readers[tag];
+        }
+    }
 }

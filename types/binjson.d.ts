@@ -12,7 +12,7 @@ export declare module binjson {
     const handlers: Handlers;
 
     interface IBinJSON<D> {
-        create: (options: Options) => IBinJSON<D>;
+        extend: (options: Options) => IBinJSON<D>;
         decode: <V = any>(data: D) => V;
         encode: (value: any) => D;
     }

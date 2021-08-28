@@ -6,7 +6,7 @@ import {binJSON, handlers} from "../";
 const TITLE = __filename.split("/").pop();
 
 describe(TITLE, () => {
-    const myJSON = binJSON.create({handler: handlers.UTF16});
+    const myJSON = binJSON.extend({handler: handlers.UTF16});
 
     it("kWideString16", () => {
         const data = new Uint8Array([0x57, 0x00, 0x06, 0x00, 0x41, 0x00, 0x42, 0x00, 0x43]);

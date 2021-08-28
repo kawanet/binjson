@@ -10,7 +10,7 @@ const DESCRIBE = ("undefined" !== typeof Buffer) ? describe : describe.skip;
 const toHex = (obj: Buffer | number[]) => [].map.call(obj, (v: number) => (0x100 | v).toString(16).substring(1)).join("-").toUpperCase();
 
 DESCRIBE(TITLE, () => {
-    const myJSON = binJSON.create({handler: handlers.Buffer});
+    const myJSON = binJSON.extend({handler: handlers.Buffer});
 
     it("kNodeBuffer", () => {
         const data = new Uint8Array([0x08, 0x2c, 0xce, 0xb0, 0x34, 2, 0, 0, 0, 3, 0x41, 0x42, 0x43]);

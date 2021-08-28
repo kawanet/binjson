@@ -6,7 +6,7 @@ import {binJSON, handlers} from "../";
 const TITLE = __filename.split("/").pop();
 
 describe(TITLE, () => {
-    const myJSON = binJSON.create({handler: handlers.Undefined});
+    const myJSON = binJSON.extend({handler: handlers.Undefined});
 
     it("undefined", () => {
         // root undefined value could not get encoded per default

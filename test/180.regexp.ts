@@ -6,7 +6,7 @@ import {binJSON, handlers} from "../";
 const TITLE = __filename.split("/").pop();
 
 describe(TITLE, () => {
-    const myJSON = binJSON.create({handler: handlers.RegExp});
+    const myJSON = binJSON.extend({handler: handlers.RegExp});
 
     it("RegExp", () => {
         const re = /re/;

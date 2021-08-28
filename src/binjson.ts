@@ -3,21 +3,39 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {initDecode, ReadRouter} from "./decode";
-import {initEncode, WriteRouter} from "./encode";
+import {decode} from "./decode";
+import {encode} from "./encode";
+import {defaults} from "./enum";
+import {WriteBuf} from "./write-buf";
+import {ReadBuf} from "./read-buf";
+import {Driver} from "./driver";
 
-function init(options?: binjson.Options, readRouter?: ReadRouter, writeRouter?: WriteRouter): binjson.IBinJSON<Uint8Array> {
+const ceil1K = (num: number) => (((num + 1023) >> 10) << 10);
 
-    /**
-     * binJSON.create() method inherits the current readRouter and writeRouter.
-     */
-    const create = (options?: binjson.Options): binjson.IBinJSON<Uint8Array> => init(options, readRouter, writeRouter);
+export class BinJSON implements binjson.IBinJSON<Uint8Array> {
+    protected driver: Driver;
+    protected bufSize = defaults.initialBufferSize;
 
-    const decode = initDecode(options, readRouter);
+    constructor(options: binjson.Options, base?: Driver) {
+        if (!base) base = new Driver();
+        this.driver = base.extend(options);
+    }
 
-    const encode = initEncode(options, writeRouter);
+    extend(options: binjson.Options): binjson.IBinJSON<Uint8Array> {
+        return new BinJSON(options, this.driver);
+    }
 
-    return {create, decode, encode};
+    decode<V = any>(data: Uint8Array): V {
+        const buf = new ReadBuf(data);
+        return decode(this.driver, buf);
+    }
+
+    encode(value: any): Uint8Array {
+        const buf = new WriteBuf(this.bufSize);
+        const data = encode(this.driver, value, buf);
+        if (data) this.bufSize = ceil1K(data.length);
+        return data;
+    }
 }
 
-export const binJSON = init();
+export const binJSON: binjson.IBinJSON<Uint8Array> = new BinJSON({});
