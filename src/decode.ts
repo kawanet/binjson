@@ -3,8 +3,8 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {ReadBuf} from "./b-readbuf";
-import {initReadRouter} from "./handler";
+import {ReadBuf} from "./read-buf";
+import {initReadRouter} from "./read-route";
 
 const defaultRouter = initReadRouter();
 

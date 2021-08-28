@@ -4,8 +4,8 @@
 
 import type {binjson} from "../types/binjson";
 import {defaults} from "./enum";
-import {WriteBuf} from "./b-writebuf";
-import {initWriteRouter} from "./handler";
+import {WriteBuf} from "./write-buf";
+import {initWriteRouter} from "./write-route";
 
 const ceil1K = (num: number) => (((num + 1023) >> 10) << 10);
 

@@ -10,23 +10,20 @@ import * as M from "./h-misc";
 import * as N from "./h-number";
 import * as O from "./h-object";
 import * as S from "./h-string";
+import * as T from "./h-typedarray";
 import * as W from "./h-widestring";
-import * as XB from "./h-buffer";
-import * as XT from "./h-typedarray";
 
-type ReadHandler<T> = binjson.ReadHandler<T>;
 type WriteHandler<T> = binjson.WriteHandler<T>;
 type WriteRouter<T> = (value: T) => binjson.WriteHandler<T>;
 
-const {hArrayBegin, hArrayEnd} = A;
+const {hArrayBegin} = A;
 const {hFalse, hTrue} = B;
-const {hDate, hNull, hRegExp, hUndefined} = M;
+const {hNull} = M;
 const {hBigInt, hDouble, hInt32, hNumber0} = N;
-const {hObjectBegin, hObjectEnd} = O;
+const {hObjectBegin} = O;
 const {hString} = S;
+const {hArrayBufferView} = T;
 const {hWideString} = W;
-const {hNodeBuffer} = XB;
-const {hArrayBufferView} = XT;
 
 const rBoolean: WriteRouter<boolean> = value => value ? hTrue : hFalse;
 
@@ -64,53 +61,6 @@ const hStringObject: WriteHandler<string | String> = {
         return rString(str).write(buf, str, next)
     },
 };
-
-export const handlers: binjson.Handlers = {
-    Buffer: hNodeBuffer,
-    Date: hDate,
-    RegExp: hRegExp,
-    UTF8: hString,
-    UTF16: hWideString,
-    Undefined: hUndefined,
-};
-
-/**
- * default router for `decode()`.
- */
-
-export function initReadRouter(): (tag: number) => ReadHandler<any> {
-    const readers: ReadHandler<any>[] = [];
-
-    [
-        hArrayBegin,
-        hArrayBufferView,
-        hArrayEnd,
-        hBigInt,
-        hDate,
-        hDouble,
-        hFalse,
-        hInt32,
-        hNodeBuffer,
-        hNull,
-        hNumber0,
-        hObjectBegin,
-        hObjectEnd,
-        hRegExp,
-        hString,
-        hTrue,
-        hUndefined,
-        hWideString,
-    ].forEach(h => {
-        const {tag} = h;
-        if (Array.isArray(tag)) {
-            for (const t of tag) readers[t] = h;
-        } else {
-            readers[tag] = h
-        }
-    });
-
-    return tag => readers[tag];
-}
 
 /**
  * default router for `encode()`.

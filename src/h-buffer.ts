@@ -9,7 +9,7 @@ import {SubTag, Tag} from "./enum";
  * Node.js Buffer
  */
 
-export const hNodeBuffer: binjson.Handler<Buffer> = {
+export const hBuffer: binjson.Handler<Buffer> = {
     tag: Tag.kNodeBuffer,
     subtag: SubTag.Buffer,
 

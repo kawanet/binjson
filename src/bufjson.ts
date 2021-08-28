@@ -4,7 +4,7 @@
 
 import type {binjson} from "../types/binjson";
 import {binJSON} from "./binjson";
-import {handlers} from "./handler";
+import {handlers} from "./read-route";
 
 function create(options?: binjson.Options): binjson.IBinJSON<Buffer> {
     const _binJSON = binJSON.create(options);
