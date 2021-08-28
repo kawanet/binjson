@@ -115,12 +115,25 @@ export class WriteBuf implements binjson.WriteBuf {
         buf.pos += 5 + length;
     }
 
-    insertData(data: Uint8Array): void {
+    insertData16(data: Uint8Array): void {
         let buf: WriteBuf = this;
         const {length} = data;
+        buf.view.setUint16(buf.pos + 1, length);
+        buf.pos += 3;
+        buf._insert(data);
+    }
 
+    insertData32(data: Uint8Array): void {
+        let buf: WriteBuf = this;
+        const {length} = data;
         buf.view.setUint32(buf.pos + 1, length);
         buf.pos += 5;
+        buf._insert(data);
+    }
+
+    private _insert(data: Uint8Array): void {
+        const buf: WriteBuf = this;
+        const {length} = data;
 
         if (buf.pos + length < buf.data.length) {
             // copy into

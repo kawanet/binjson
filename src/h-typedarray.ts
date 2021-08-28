@@ -75,12 +75,12 @@ const pickSubTag = (obj: ArrayBufferView): number => {
 export const hArrayBufferView: Handler<ArrayBufferView> = {
     tag: Tag.kArrayBufferView,
 
-    read: (buf) => {
+    read: (buf, tag) => {
         const subtag = buf.readI32() >>> 0;
         const type = tagIndex[subtag] || defaultType;
         const {from, byte} = type;
 
-        return buf.readData32((array, offset, length) => {
+        const cb = (array: Uint8Array, offset: number, length: number) => {
             let {buffer, byteOffset} = array;
             const start = byteOffset + offset;
 
@@ -92,7 +92,14 @@ export const hArrayBufferView: Handler<ArrayBufferView> = {
 
             // share memory for Uint8Array etc.
             return from(buffer, start, length / byte);
-        });
+        };
+
+        tag = buf.tag();
+        if (tag === Tag.kBinary16) {
+            return buf.readData16(cb);
+        } else if (tag === Tag.kBinary32) {
+            return buf.readData32(cb);
+        }
     },
 
     match: value => ArrayBuffer.isView(value),
@@ -102,9 +109,15 @@ export const hArrayBufferView: Handler<ArrayBufferView> = {
         buf.tag(Tag.kArrayBufferView);
         buf.writeI32(subtag);
 
-        buf.tag(Tag.kBinary32);
         const {buffer, byteLength, byteOffset} = value;
         const data = new Uint8Array(buffer, byteOffset, byteLength);
-        buf.insertData(data);
+
+        if (byteLength < 0x10000) {
+            buf.tag(Tag.kBinary16);
+            buf.insertData16(data);
+        } else {
+            buf.tag(Tag.kBinary32);
+            buf.insertData32(data);
+        }
     }
 };

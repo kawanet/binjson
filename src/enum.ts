@@ -34,7 +34,7 @@ export const enum Tag {
     kObjectEnd = 0x3E, // >
     kArrayBegin = 0x28, // (
     kArrayEnd = 0x29, // )
-    kExt4 = 0x24, // $
+    kExtension = 0x24, // $
 
     // deprecated
     kDate = 0x44, // D
