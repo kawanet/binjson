@@ -25,18 +25,14 @@ export class ReadBuf implements binjson.ReadBuf {
 
     readI32(): number {
         const {pos} = this;
-        const size = this.data[pos + 1];
-        if (size !== 4) throw new SyntaxError(`Invalid packet size: 4 != ${size}`);
-        this.pos += 6;
-        return this.view.getInt32(pos + 2, true);
+        this.pos += 5;
+        return this.view.getInt32(pos + 1, true);
     }
 
     readF64(): number {
         const {pos} = this;
-        const size = this.data[pos + 1];
-        if (size !== 8) throw new SyntaxError(`Invalid packet size: 8 != ${size}`);
-        this.pos += 10;
-        return this.view.getFloat64(pos + 2, true);
+        this.pos += 9;
+        return this.view.getFloat64(pos + 1, true);
     }
 
     readData<T>(fn: (data: Uint8Array, offset: number, length: number) => T): T {

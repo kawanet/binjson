@@ -84,16 +84,14 @@ export class WriteBuf implements binjson.WriteBuf {
 
     writeI32(value: number): void {
         const {pos} = this;
-        this.data[pos + 1] = 4;
-        this.view.setInt32(pos + 2, value, true);
-        this.pos += 6;
+        this.view.setInt32(pos + 1, value, true);
+        this.pos += 5;
     }
 
     writeF64(value: number): void {
         const {pos} = this;
-        this.data[pos + 1] = 8;
-        this.view.setFloat64(pos + 2, value, true);
-        this.pos += 10;
+        this.view.setFloat64(pos + 1, value, true);
+        this.pos += 9;
     }
 
     writeData(length: number, fn: (data: Uint8Array, offset: number) => number): void {

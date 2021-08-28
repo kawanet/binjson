@@ -21,10 +21,10 @@ describe(TITLE, () => {
         assert.equal(binJSON.decode(binJSON.encode(new Date(date))), date);
     });
 
-    test("D", 10, new Date("2021-08-20T00:00:00.000Z"));
-    test("D", 10, new Date("1969-12-31T23:59:59.999Z"));
-    test("D", 10, new Date("1970-01-01T00:00:00.000Z"));
-    test("D", 10, new Date("1970-01-01T00:00:00.001Z"));
+    test("D", 9, new Date("2021-08-20T00:00:00.000Z"));
+    test("D", 9, new Date("1969-12-31T23:59:59.999Z"));
+    test("D", 9, new Date("1970-01-01T00:00:00.000Z"));
+    test("D", 9, new Date("1970-01-01T00:00:00.001Z"));
 
     function test(tag: string, size: number, value: any): void {
         it(JSON.stringify(value), () => {

@@ -25,10 +25,10 @@ describe(TITLE, () => {
     test("7", 1, 7);
     test("8", 1, 8);
     test("9", 1, 9);
-    test("I", 6, 10);
-    test("I", 6, -1);
-    test("N", 10, 0.5);
-    test("N", 10, -0.5);
+    test("I", 5, 10);
+    test("I", 5, -1);
+    test("N", 9, 0.5);
+    test("N", 9, -0.5);
 
     function test(tag: string, size: number, value: any): void {
         it(`[${tag}] ` + JSON.stringify(value), () => {
