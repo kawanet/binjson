@@ -51,7 +51,7 @@ export const hNull: Handler<null> = {
 export const hRegExp: Handler<RegExp> = {
     tag: Tag.kRegExp,
 
-    read: (buf, next) => {
+    read: (buf, _, next) => {
         const count = buf.count();
         if (count !== 2) throw new SyntaxError(`Invalid packet count: ${count}`);
         const source = next();

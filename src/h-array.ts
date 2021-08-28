@@ -16,7 +16,7 @@ export const hBeginDenseJSArray: binjson.Handler<any[]> = {
     tag: Tag.kArrayBegin,
     allowToJSON: true,
 
-    read: (buf, next) => {
+    read: (buf, _, next) => {
         buf.pos++;
         const array: any[] = [];
 

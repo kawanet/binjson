@@ -16,7 +16,7 @@ export const hBeginJSObject: binjson.Handler<object> = {
     tag: Tag.kObjectBegin,
     allowToJSON: true,
 
-    read: (buf, next) => {
+    read: (buf, _, next) => {
         buf.pos++;
 
         const object: { [key: string]: any } = {};

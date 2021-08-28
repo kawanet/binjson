@@ -21,7 +21,7 @@ export function initDecode(options: binjson.Options, router: ReadRouter): Decode
         const next = (): any => {
             const tag = buf.tag();
             const handler = router(tag);
-            if (handler) return handler.read(buf, next);
+            if (handler) return handler.read(buf, tag, next);
         };
 
         return next();

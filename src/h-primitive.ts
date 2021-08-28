@@ -105,7 +105,7 @@ export const hDouble: Handler<number> = {
 export const hBigInt: Handler<bigint> = {
     tag: Tag.kBigInt,
 
-    read: (buf, next) => {
+    read: (buf, _, next) => {
         buf.pos += 2;
         return BigInt(next());
     },
