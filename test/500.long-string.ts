@@ -30,8 +30,8 @@ describe(TITLE, () => {
     test("W", twobyte, 2, 100, utf16JSON);
     test("W", twobyte, 2, 1000, utf16JSON);
     test("W", twobyte, 2, 10000, utf16JSON);
-    test("W", twobyte, 2, 100000, utf16JSON);
-    test("W", twobyte, 2, 1000000, utf16JSON);
+    test("^W", twobyte, 2, 100000, utf16JSON);
+    test("^W", twobyte, 2, 1000000, utf16JSON);
 
     // UTF8 kString
 

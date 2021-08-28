@@ -12,16 +12,26 @@ import {Tag} from "./enum";
 export const hWideString: binjson.Handler<string> = {
     tag: [Tag.kWideString16, Tag.kWideString32],
 
-    read: (buf) => buf.readView32(readString),
+    read: (buf, tag) => {
+        if (tag === Tag.kWideString16) {
+            return buf.readView16(readString);
+        } else if (tag === Tag.kWideString32) {
+            return buf.readView32(readString);
+        }
+    },
 
     match: (value) => ("string" === typeof value),
 
     write: (buf, value) => {
-        const {length} = value;
-        const bytes = length << 1;
-        buf = buf.prepare(6 + bytes);
-        buf.tag(Tag.kWideString16);
-        buf.writeView32(bytes, (view, offset) => writeString(view, offset, value));
+        const length = value.length << 1;
+        buf = buf.prepare(5 + length);
+        if (length < 0x10000) {
+            buf.tag(Tag.kWideString16);
+            buf.writeView16(length, (array, offset) => writeString(array, offset, value));
+        } else {
+            buf.tag(Tag.kWideString32);
+            buf.writeView32(length, (array, offset) => writeString(array, offset, value));
+        }
     },
 };
 

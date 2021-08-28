@@ -14,35 +14,42 @@ describe(TITLE, () => {
         assert.deepEqual(decoded, "ABC");
     });
 
+    it("kString32", () => {
+        const data = new Uint8Array([0x13, 0x00, 0x00, 0x00, 0x03, 0x61, 0x62, 0x63]);
+        const decoded = binJSON.decode(data);
+        assert.deepEqual(decoded, "abc");
+    });
+
     // empty
-    test("S", 2, "");
+    test(1, "");
 
     // U+0031
-    test("S", 3, "1");
-    test("S", 4, "12");
-    test("S", 5, "123");
+    test(2, "1");
+    test(3, "12");
+    test(4, "123");
 
     // U+03B1
-    test("S", 4, "α");
-    test("S", 6, "αβ");
-    test("S", 8, "αβγ");
+    test(3, "α");
+    test(5, "αβ");
+    test(7, "αβγ");
 
     // U+FF11
-    test("S", 5, "１");
-    test("S", 8, "１２");
-    test("S", 11, "１２３");
+    test(4, "１");
+    test(7, "１２");
+    test(10, "１２３");
 
     // U+1F600
-    test("S", 6, "😀");
-    test("S", 10, "😀😀");
-    test("S", 14, "😀😀😀");
+    test(5, "😀");
+    test(9, "😀😀");
+    test(13, "😀😀😀");
 
-    function test(tag: string, size: number, value: any): void {
+    function test(size: number, value: any): void {
+        const tagHex = (size + 95).toString(16);
+
         it(JSON.stringify(value), () => {
             const buf = myJSON.encode(value);
             assert.equal(ArrayBuffer.isView(buf), true, "ArrayBuffer.isView");
-            assert.equal(buf[0]?.toString(16), tag.charCodeAt(0).toString(16), "tag");
-            size = 0; // TODO
+            if (tagHex) assert.equal(buf[0]?.toString(16), tagHex, "tag");
             if (size) assert.equal(buf.length, size, "byteLength");
 
             const rev = myJSON.decode(buf);

@@ -5,49 +5,47 @@
 import type {binjson} from "../types/binjson";
 import {Tag} from "./enum";
 
-const hString0tag = [];
-for (let i = Tag.kString0; i < 256; i++) hString0tag.push(i);
+const enum E {
+    str0start = Tag.kString0,
+    str0end = 0x100,
+    str0max = (str0end - str0start),
+    str16max = 0x10000,
+}
 
-export const hString0: binjson.Handler<string> = {
-    tag: hString0tag,
-
-    read: (buf, tag) => {
-        const str = buf.readData32(readString);
-        buf.pos += (tag - Tag.kString0 + 1);
-        return str;
-    },
-
-    match: (value) => ("string" === typeof value),
-
-    write: (buf, value) => {
-        const {length} = value;
-        buf = buf.prepare(8 + length * 3);
-        buf.tag(Tag.kString16);
-        buf.writeData32(length * 3, (array, offset) => writeString(array, offset, value));
-    },
-};
+const tag = [Tag.kString16, Tag.kString32];
+for (let i: number = E.str0start; i < E.str0end; i++) tag.push(i);
 
 /**
  * UTF8
  */
 
 export const hString: binjson.Handler<string> = {
-    tag: [Tag.kString16, Tag.kString32],
+    tag: tag,
 
     read: (buf, tag) => {
         if (tag === Tag.kString16) {
             return buf.readData16(readString);
         } else if (tag === Tag.kString32) {
             return buf.readData32(readString);
+        } else if (tag >= Tag.kString0) {
+            const length = tag - Tag.kString0;
+            const {pos} = buf;
+            buf.pos += 1 + length;
+            return readString(buf.data, pos + 1, length);
         }
     },
 
     match: (value) => ("string" === typeof value),
 
     write: (buf, value) => {
-        const length = value.length * 3;
+        let length = value.length * 3;
         buf = buf.prepare(5 + length);
-        if (length < 0x10000) {
+
+        if (length < E.str0max) {
+            length = writeString(buf.data, buf.pos + 1, value);
+            buf.tag(Tag.kString0 + length);
+            buf.pos += 1 + length;
+        } else if (length < E.str16max) {
             buf.tag(Tag.kString16);
             buf.writeData16(length, (array, offset) => writeString(array, offset, value));
         } else {

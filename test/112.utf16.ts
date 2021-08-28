@@ -9,40 +9,48 @@ describe(TITLE, () => {
     const myJSON = binJSON.create({handler: handlers.UTF16});
 
     it("kWideString16", () => {
-        const data = new Uint8Array([0x57, 0x00, 0x00, 0x00, 0x06, 0x41, 0x00, 0x42, 0x00, 0x43, 0x00]);
+        const data = new Uint8Array([0x57, 0x00, 0x06, 0x41, 0x00, 0x42, 0x00, 0x43, 0x00]);
         const decoded = binJSON.decode(data);
         assert.deepEqual(decoded, "ABC");
     });
 
+    it("kWideString32", () => {
+        const data = new Uint8Array([0x17, 0x00, 0x00, 0x00, 0x06, 0x61, 0x00, 0x62, 0x00, 0x63, 0x00]);
+        const decoded = binJSON.decode(data);
+        assert.deepEqual(decoded, "abc");
+    });
+
     // empty
-    test("W", 2, "");
+    test("W", "");
 
     // U+0031
-    test("W", 4, "1");
-    test("W", 6, "12");
-    test("W", 8, "123");
+    test("W", "1");
+    test("W", "12");
+    test("W", "123");
 
     // U+03B1
-    test("W", 4, "α");
-    test("W", 6, "αβ");
-    test("W", 8, "αβγ");
+    test("W", "α");
+    test("W", "αβ");
+    test("W", "αβγ");
 
     // U+FF11
-    test("W", 4, "１");
-    test("W", 6, "１２");
-    test("W", 8, "１２３");
+    test("W", "１");
+    test("W", "１２");
+    test("W", "１２３");
 
     // U+1F600
-    test("W", 6, "😀");
-    test("W", 10, "😀😀");
-    test("W", 14, "😀😀😀");
+    test("W", "😀");
+    test("W", "😀😀");
+    test("W", "😀😀😀");
 
-    function test(tag: string, size: number, value: any): void {
+    function test(tag: string, value: any): void {
+        const size = 3 + value.length * 2;
+        const tagHex = tag.charCodeAt(0).toString(16);
+
         it(JSON.stringify(value), () => {
             const buf = myJSON.encode(value);
             assert.equal(ArrayBuffer.isView(buf), true, "ArrayBuffer.isView");
-            assert.equal(buf[0]?.toString(16), tag.charCodeAt(0).toString(16), "tag");
-            size = 0; // TODO
+            if (tagHex) assert.equal(buf[0]?.toString(16), tagHex, "tag");
             if (size) assert.equal(buf.length, size, "byteLength");
 
             const rev = myJSON.decode(buf);

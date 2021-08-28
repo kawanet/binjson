@@ -7,7 +7,7 @@ import {PacketType as P} from "./enum";
 
 export class ReadBuf implements binjson.ReadBuf {
     data: Uint8Array;
-    view: DataView;
+    protected view: DataView;
     pos = 0;
 
     constructor(buf: Uint8Array) {

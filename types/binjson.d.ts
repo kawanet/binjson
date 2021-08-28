@@ -53,6 +53,7 @@ export declare module binjson {
 
     interface ReadBuf {
         pos: number;
+        data: Uint8Array; // only used kString0
 
         tag(): number;
 
@@ -73,6 +74,7 @@ export declare module binjson {
 
     interface WriteBuf {
         pos: number;
+        data: Uint8Array; // only used kString0
 
         prepare(size: number): WriteBuf;
 

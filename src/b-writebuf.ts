@@ -10,7 +10,7 @@ const ceil1K = (num: number) => (((num + 1023) >> 10) << 10);
 export class WriteBuf implements binjson.WriteBuf {
     protected next?: WriteBuf;
     data: Uint8Array;
-    view: DataView;
+    protected view: DataView;
     pos = 0;
 
     constructor(buf: Uint8Array | number) {
