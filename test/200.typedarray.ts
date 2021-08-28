@@ -22,17 +22,17 @@ describe(TITLE, () => {
     it("kUint8Array", () => {
         assert(toHex([10, 11, 12, 13, 14, 15]), "0a-0b-0c-0d-0e-0f");
 
-        const data = new Uint8Array([0x56, 0x04, 0x42, 0x41, 0x42, 0x43]);
+        const data = new Uint8Array([0x56, 0xe6, 0xed, 0x42, 0xfd, 2, 0, 0, 0, 4, 0x41, 0x42, 0x43, 0x44]);
         const decoded = binJSON.decode(data);
         assert.equal(decoded instanceof Uint8Array, true);
-        assert.deepEqual(toHex(decoded), "41-42-43");
+        assert.deepEqual(toHex(decoded), "41-42-43-44");
     });
 
     it("kUint32Array", () => {
-        const data = new Uint8Array([0x56, 0x08, 0x44, 0x41, 0x00, 0x00, 0x00]);
+        const data = new Uint8Array([0x56, 0xf9, 0x8d, 0xfe, 0x49, 2, 0, 0, 0, 4, 0x41, 0x42, 0x43, 0x44]);
         const decoded = binJSON.decode(data);
         assert.equal(decoded instanceof Uint32Array, true);
-        assert.deepEqual(toHex(decoded), "41-00-00-00");
+        assert.deepEqual(toHex(decoded), "41-42-43-44");
     });
 
     test("Int8Array", Int8Array);

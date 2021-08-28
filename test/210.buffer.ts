@@ -13,11 +13,10 @@ DESCRIBE(TITLE, () => {
     const myJSON = binJSON.create({handler: handlers.Buffer});
 
     it("kNodeBuffer", () => {
-        const data = new Uint8Array([0x08, 0x03, 0x41, 0x42, 0x43]);
+        const data = new Uint8Array([0x08, 0x2c, 0xce, 0xb0, 0x34, 2, 0, 0, 0, 3, 0x41, 0x42, 0x43]);
         const decoded = myJSON.decode(data);
         assert.equal(Buffer.isBuffer(decoded), true);
         assert.deepEqual(toHex(decoded), toHex([0x41, 0x42, 0x43]));
-
     });
 
     it("Buffer", () => {

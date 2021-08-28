@@ -3,7 +3,6 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {PacketType as P} from "./enum";
 
 const ceil1K = (num: number) => (((num + 1023) >> 10) << 10);
 
@@ -116,21 +115,12 @@ export class WriteBuf implements binjson.WriteBuf {
         buf.pos += 5 + length;
     }
 
-    insertData(data: Uint8Array, subtag?: number): void {
+    insertData(data: Uint8Array): void {
         let buf: WriteBuf = this;
         const {length} = data;
 
-        {
-            const hasSubTag = (subtag != null ? 1 : 0)
-            const offset = getOffset(length + hasSubTag);
-            writeSize(buf, offset, length + hasSubTag);
-
-            if (hasSubTag) {
-                buf.data[buf.pos + offset] = subtag;
-            }
-
-            buf.pos += offset + hasSubTag;
-        }
+        buf.view.setUint32(buf.pos + 1, length);
+        buf.pos += 5;
 
         if (buf.pos + length < buf.data.length) {
             // copy into
@@ -143,27 +133,4 @@ export class WriteBuf implements binjson.WriteBuf {
             chunk.next = new WriteBuf(buf.data.subarray(buf.pos));
         }
     }
-}
-
-const getOffset = (size: number) => ((size <= P.payload7max) ? 2 : (size <= P.packet16max) ? 4 : 6);
-
-function writeSize(buf: WriteBuf, offset: number, size: number, flag?: number) {
-    let type: number;
-
-    switch (offset) {
-        case  2:
-            type = size;
-            break;
-        case 4:
-            type = P.payload16;
-            buf.view.setUint16(buf.pos + 2, size);
-            break;
-        case 6:
-            type = P.payload32;
-            buf.view.setInt32(buf.pos + 2, size);
-            break;
-    }
-
-    if (flag) type |= flag;
-    buf.data[buf.pos + 1] = type;
 }

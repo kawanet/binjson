@@ -14,6 +14,9 @@ export const hNodeBuffer: binjson.Handler<Buffer> = {
     subtag: SubTag.Buffer,
 
     read: (buf) => {
+        const subtag = buf.readI32() >>> 0;
+        if (subtag !== SubTag.Buffer) return;
+
         return buf.readData32((array, offset, length) => {
             return Buffer.from(array.buffer, array.byteOffset + offset, length);
         });
@@ -23,6 +26,9 @@ export const hNodeBuffer: binjson.Handler<Buffer> = {
 
     write: (buf, value) => {
         buf.tag(Tag.kNodeBuffer);
+        buf.writeI32(SubTag.Buffer);
+
+        buf.tag(Tag.kBinary32);
         const {buffer, byteLength, byteOffset} = value;
         buf.insertData(Buffer.from(buffer, byteOffset, byteLength));
     }

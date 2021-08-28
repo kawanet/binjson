@@ -92,6 +92,6 @@ export declare module binjson {
 
         writeView32(size: number, fn: (view: DataView, offset: number) => number): void;
 
-        insertData(data: Uint8Array, subtag?: number): void;
+        insertData(data: Uint8Array): void;
     }
 }

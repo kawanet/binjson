@@ -6,20 +6,6 @@ export const enum defaults {
     initialBufferSize = 2048,
 }
 
-export const enum PacketType {
-    sizeMask = 0x7f,
-    payload7 = 0x00,
-    payload7max = 0x80 - 5,
-    payload16 = 0x80 - 2,
-    payload16max = 0xffff,
-    payload32 = 0x80 - 4,
-    packet7 = 0x80,
-    packet7max = 0x100 - 5,
-    packet16 = 0x100 - 2,
-    packet16max = 0xffff,
-    packet32 = 0x100 - 4,
-}
-
 /**
  * Tag: uint8
  */
@@ -83,19 +69,4 @@ export const enum SubTag {
     BigUint64Array = 0xdf2709d1,
     DataView = 0xd3ad5ca2,
     Buffer = 0x2cceb034,
-}
-
-export const enum ArrayBufferViewTag {
-    kInt8Array = 0x62, // b
-    kUint8Array = 0x42, // B
-    kUint8ClampedArray = 0x43, // C
-    kInt16Array = 0x77, // w
-    kUint16Array = 0x57, // W
-    kInt32Array = 0x64, // d
-    kUint32Array = 0x44, // D
-    kFloat32Array = 0x66, // f
-    kFloat64Array = 0x46, // F
-    kBigInt64Array = 0x71, // q
-    kBigUint64Array = 0x51, // Q
-    kDataView = 0x3F, // ?
 }
