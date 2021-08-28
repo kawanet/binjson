@@ -41,7 +41,7 @@ const readString = (view: DataView, offset: number, length: number): string => {
     if (!length) {
         return "";
     } else if (length === 1) {
-        return String.fromCharCode(view.getUint16(offset, true));
+        return String.fromCharCode(view.getUint16(offset));
     } else {
         let string = "";
         let size = 256;
@@ -54,7 +54,7 @@ const readString = (view: DataView, offset: number, length: number): string => {
                 chunk = new Array(size);
             }
             for (let i = 0; i < size; i++) {
-                chunk[i] = view.getUint16(offset, true);
+                chunk[i] = view.getUint16(offset);
                 offset += 2;
             }
             string += String.fromCharCode.apply(String, chunk);
@@ -68,7 +68,7 @@ const writeString = (view: DataView, offset: number, string: string): number => 
     const {length} = string;
     let idx = 0;
     while (idx < length) {
-        view.setUint16(offset, string.charCodeAt(idx++), true);
+        view.setUint16(offset, string.charCodeAt(idx++));
         offset += 2;
     }
     return idx << 1;

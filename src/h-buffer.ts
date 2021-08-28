@@ -3,7 +3,7 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {Tag} from "./enum";
+import {SubTag, Tag} from "./enum";
 
 /**
  * Node.js Buffer
@@ -11,6 +11,7 @@ import {Tag} from "./enum";
 
 export const hNodeBuffer: binjson.Handler<Buffer> = {
     tag: Tag.kNodeBuffer,
+    subtag: SubTag.Buffer,
 
     read: (buf) => {
         return buf.readData32((array, offset, length) => {

@@ -40,6 +40,8 @@ export declare module binjson {
     interface ReadHandler<T> {
         tag?: number | number[];
 
+        subtag?: number | number[];
+
         read: (buf: ReadBuf, tag: number, next: () => any) => T;
     }
 

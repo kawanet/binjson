@@ -3,7 +3,7 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {Tag} from "./enum";
+import {SubTag, Tag} from "./enum";
 
 type Handler<T> = binjson.Handler<T>;
 
@@ -34,14 +34,21 @@ export const hUndefined: Handler<undefined> = {
 
 export const hDate: Handler<Date> = {
     tag: Tag.kDate,
+    subtag: SubTag.Date,
 
-    read: (buf) => new Date(buf.readF64()),
+    read: (buf, _, next) => {
+        const subtag = buf.readI32() >>> 0;
+        if (subtag !== SubTag.Date) return;
+
+        return new Date(next());
+    },
 
     match: (value) => (value instanceof Date),
 
-    write: (buf, value) => {
+    write: (buf, value, next) => {
         buf.tag(Tag.kDate);
-        buf.writeF64(+value);
+        buf.writeI32(SubTag.Date);
+        next(+value);
     },
 };
 
@@ -71,9 +78,12 @@ export const hNull: Handler<null> = {
 
 export const hRegExp: Handler<RegExp> = {
     tag: Tag.kRegExp,
+    subtag: SubTag.RegExp,
 
     read: (buf, _, next) => {
-        buf.pos++;
+        const subtag = buf.readI32() >>> 0;
+        if (subtag !== SubTag.RegExp) return;
+
         const source = next();
         const flags = next();
         return new RegExp(source, flags);
@@ -82,9 +92,10 @@ export const hRegExp: Handler<RegExp> = {
     match: (value) => (value instanceof RegExp),
 
     write: (buf, value, next) => {
-        const {flags, source} = value;
         buf.tag(Tag.kRegExp);
-        buf.pos++;
+        buf.writeI32(SubTag.RegExp);
+
+        const {flags, source} = value;
         next(source || "");
         next(flags || "");
     },

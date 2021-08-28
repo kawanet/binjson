@@ -21,13 +21,13 @@ export class ReadBuf implements binjson.ReadBuf {
     readI32(): number {
         const {pos} = this;
         this.pos += 5;
-        return this.view.getInt32(pos + 1, true);
+        return this.view.getInt32(pos + 1);
     }
 
     readF64(): number {
         const {pos} = this;
         this.pos += 9;
-        return this.view.getFloat64(pos + 1, true);
+        return this.view.getFloat64(pos + 1);
     }
 
     readData16<T>(fn: (data: Uint8Array, offset: number, length: number) => T): T {

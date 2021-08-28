@@ -49,13 +49,13 @@ const obj4 = bufJSON.decode(buf); // => object
 | name | tag | hex | JavaScript | payload |
 |----|----|----|----|----|
 | kPadding | `\0` | `00` | N/A ||
-| kUndefined | `_` | `5f` | undefined ||
+| kUndefined | `_` | `5F` | undefined ||
 | kNull | `0` | `30` | null ||
 | kTrue | `T` | `54` | boolean ||
 | kFalse | `F` | `46` | boolean ||
 | kInt32 | `I` | `49 xx xx xx xx` | number | int32 |
-| kDouble | `N` | `4e xx xx xx xx xx xx xx xx` | number | float64 |
-| kBigInt | `Z` | `5a ...` | BigInt | packet |
+| kDouble | `N` | `4E xx xx xx xx xx xx xx xx` | number | float64 |
+| kBigInt | `Z` | `5A ...` | BigInt | packet |
 | kArrayBegin | `(` | `28 ... 29` | Array | packets |
 | kArrayEnd | `)` | `29` |||
 | kObjectBegin | `<` | `3C ... 3E` | object | packets |

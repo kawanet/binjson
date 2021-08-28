@@ -42,10 +42,13 @@ export const enum Tag {
     kString32 = 0x13, // ^S
     kWideString16 = 0x57, // W
     kWideString32 = 0x17, // ^W
+    kBinary16 = 0x42, // B
+    kBinary32 = 0x02, // ^B
     kObjectBegin = 0x3C, // <
     kObjectEnd = 0x3E, // >
     kArrayBegin = 0x28, // (
     kArrayEnd = 0x29, // )
+    kExt4 = 0x24, // $
 
     // deprecated
     kDate = 0x44, // D

@@ -100,6 +100,7 @@ export const hArrayBufferView: Handler<ArrayBufferView> = {
     write: (buf, value) => {
         buf.tag(Tag.kArrayBufferView);
         const {buffer, byteLength, byteOffset} = value;
+        buf.writeI32(byteLength);
         const subtag = pickSubTag(value);
         const data = new Uint8Array(buffer, byteOffset, byteLength);
         buf.insertData(data, subtag);
