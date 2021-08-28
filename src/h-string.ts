@@ -5,14 +5,17 @@
 import type {binjson} from "../types/binjson";
 import {Tag} from "./enum";
 
-/**
- * UTF8
- */
+const hString0tag = [];
+for (let i = Tag.kString0; i < 256; i++) hString0tag.push(i);
 
-export const hString: binjson.Handler<string> = {
-    tag: Tag.kString16,
+export const hString0: binjson.Handler<string> = {
+    tag: hString0tag,
 
-    read: (buf) => buf.readData(readString),
+    read: (buf, tag) => {
+        const str = buf.readData32(readString);
+        buf.pos += (tag - Tag.kString0 + 1);
+        return str;
+    },
 
     match: (value) => ("string" === typeof value),
 
@@ -21,7 +24,27 @@ export const hString: binjson.Handler<string> = {
         buf = buf.prepare(8 + length * 3);
         buf.tag(Tag.kString16);
         if (!length) return buf.pos += 2;
-        buf.writeData(length * 3, (array, offset) => writeString(array, offset, value));
+        buf.writeData32(length * 3, (array, offset) => writeString(array, offset, value));
+    },
+};
+
+/**
+ * UTF8
+ */
+
+export const hString: binjson.Handler<string> = {
+    tag: [Tag.kString16, Tag.kString32],
+
+    read: (buf) => buf.readData32(readString),
+
+    match: (value) => ("string" === typeof value),
+
+    write: (buf, value) => {
+        const {length} = value;
+        buf = buf.prepare(8 + length * 3);
+        buf.tag(Tag.kString16);
+        if (!length) return buf.pos += 2;
+        buf.writeData32(length * 3, (array, offset) => writeString(array, offset, value));
     },
 };
 

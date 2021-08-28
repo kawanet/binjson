@@ -35,11 +35,11 @@ export class ReadBuf implements binjson.ReadBuf {
         return this.view.getFloat64(pos + 1, true);
     }
 
-    readData<T>(fn: (data: Uint8Array, offset: number, length: number) => T): T {
+    readData32<T>(fn: (data: Uint8Array, offset: number, length: number) => T): T {
         return read(this, (offset, length) => fn(this.data, offset, length));
     }
 
-    readView<T>(fn: (view: DataView, offset: number, length: number) => T): T {
+    readView32<T>(fn: (view: DataView, offset: number, length: number) => T): T {
         return read(this, (offset, length) => fn(this.view, offset, length));
     }
 }

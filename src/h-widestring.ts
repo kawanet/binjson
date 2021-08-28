@@ -10,9 +10,9 @@ import {Tag} from "./enum";
  */
 
 export const hWideString: binjson.Handler<string> = {
-    tag: Tag.kWideString16,
+    tag: [Tag.kWideString16, Tag.kWideString32],
 
-    read: (buf) => buf.readView(readString),
+    read: (buf) => buf.readView32(readString),
 
     match: (value) => ("string" === typeof value),
 
@@ -23,7 +23,7 @@ export const hWideString: binjson.Handler<string> = {
         buf.tag(Tag.kWideString16);
         if (!length) return buf.pos += 2;
 
-        buf.writeView(bytes, (view, offset) => writeString(view, offset, value));
+        buf.writeView32(bytes, (view, offset) => writeString(view, offset, value));
     },
 };
 

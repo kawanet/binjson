@@ -13,7 +13,7 @@ export const hNodeBuffer: binjson.Handler<Buffer> = {
     tag: Tag.kNodeBuffer,
 
     read: (buf) => {
-        return buf.readData((array, offset, length) => {
+        return buf.readData32((array, offset, length) => {
             return Buffer.from(array.buffer, array.byteOffset + offset, length);
         });
     },

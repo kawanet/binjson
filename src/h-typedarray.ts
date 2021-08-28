@@ -76,7 +76,7 @@ export const hArrayBufferView: Handler<ArrayBufferView> = {
     tag: Tag.kArrayBufferView,
 
     read: (buf) => {
-        return buf.readData((array, offset, length) => {
+        return buf.readData32((array, offset, length) => {
             const subtag = array[offset++];
             length--;
             const type = tagIndex[subtag] || defaultType;

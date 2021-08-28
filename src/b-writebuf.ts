@@ -94,7 +94,7 @@ export class WriteBuf implements binjson.WriteBuf {
         this.pos += 9;
     }
 
-    writeData(length: number, fn: (data: Uint8Array, offset: number) => number): void {
+    writeData32(length: number, fn: (data: Uint8Array, offset: number) => number): void {
         const buf: WriteBuf = this;
         const offset = getOffset(length);
         length = fn(buf.data, buf.pos + offset);
@@ -102,7 +102,7 @@ export class WriteBuf implements binjson.WriteBuf {
         buf.pos += offset + length;
     }
 
-    writeView(length: number, fn: (view: DataView, offset: number) => number): void {
+    writeView32(length: number, fn: (view: DataView, offset: number) => number): void {
         const buf: WriteBuf = this;
         const offset = getOffset(length);
         length = fn(buf.view, buf.pos + offset);

@@ -62,9 +62,9 @@ export declare module binjson {
 
         readF64(): number;
 
-        readData<T>(fn: (data: Uint8Array, offset: number, length: number) => T): T;
+        readData32<T>(fn: (data: Uint8Array, offset: number, length: number) => T): T;
 
-        readView<T>(fn: (view: DataView, offset: number, length: number) => T): T;
+        readView32<T>(fn: (view: DataView, offset: number, length: number) => T): T;
     }
 
     interface WriteBuf {
@@ -80,9 +80,9 @@ export declare module binjson {
 
         writeF64(value: number): void;
 
-        writeData(size: number, fn: (data: Uint8Array, offset: number) => number): void;
+        writeData32(size: number, fn: (data: Uint8Array, offset: number) => number): void;
 
-        writeView(size: number, fn: (view: DataView, offset: number) => number): void;
+        writeView32(size: number, fn: (view: DataView, offset: number) => number): void;
 
         insertData(data: Uint8Array, subtag?: number): void;
     }
