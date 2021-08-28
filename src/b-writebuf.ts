@@ -72,16 +72,6 @@ export class WriteBuf implements binjson.WriteBuf {
         this.data[this.pos] = tag;
     }
 
-    count(count: number): void {
-        if (count) {
-            const offset = getOffset(count);
-            writeSize(this, offset, count, P.payload7);
-            this.pos += offset;
-        } else {
-            this.pos += 2;
-        }
-    }
-
     writeI32(value: number): void {
         const {pos} = this;
         this.view.setInt32(pos + 1, value, true);

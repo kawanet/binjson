@@ -73,8 +73,7 @@ export const hRegExp: Handler<RegExp> = {
     tag: Tag.kRegExp,
 
     read: (buf, _, next) => {
-        const count = buf.count();
-        if (count !== 2) throw new SyntaxError(`Invalid packet count: ${count}`);
+        buf.pos++;
         const source = next();
         const flags = next();
         return new RegExp(source, flags);
@@ -85,7 +84,7 @@ export const hRegExp: Handler<RegExp> = {
     write: (buf, value, next) => {
         const {flags, source} = value;
         buf.tag(Tag.kRegExp);
-        buf.count(2);
+        buf.pos++;
         next(source || "");
         next(flags || "");
     },

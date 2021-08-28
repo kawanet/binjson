@@ -66,7 +66,7 @@ export const hBigInt: Handler<bigint> = {
     tag: Tag.kBigInt,
 
     read: (buf, _, next) => {
-        buf.pos += 2;
+        buf.pos++;
         return BigInt(next());
     },
 
@@ -75,7 +75,7 @@ export const hBigInt: Handler<bigint> = {
         const {length} = string;
         buf = buf.prepare(8 + length);
         buf.tag(Tag.kBigInt);
-        buf.count(1);
+        buf.pos++;
         next(string);
     },
 };

@@ -3,7 +3,6 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {PacketType as P} from "./enum";
 
 export class ReadBuf implements binjson.ReadBuf {
     data: Uint8Array;
@@ -17,10 +16,6 @@ export class ReadBuf implements binjson.ReadBuf {
 
     tag(): number {
         return this.data[this.pos];
-    }
-
-    count(): number {
-        return read(this);
     }
 
     readI32(): number {
@@ -67,39 +62,3 @@ export class ReadBuf implements binjson.ReadBuf {
         return fn(buf.view, pos + 5, length);
     }
 }
-
-type ReadCallback<T> = (offset: number, length: number) => T;
-
-interface IRead {
-    <T>(buf: ReadBuf, fn: ReadCallback<T>): T;
-
-    // returns size only
-    (buf: ReadBuf): number;
-}
-
-const read: IRead = <T>(buf: ReadBuf, cb?: ReadCallback<T>) => {
-    const {pos} = buf;
-    const layout = buf.data[pos + 1];
-    let size = layout & P.sizeMask;
-    let offset: number;
-    if (size === P.payload32) {
-        size = buf.view.getInt32(pos + 2);
-        offset = 6;
-    } else if (size === P.payload16) {
-        size = buf.view.getUint16(pos + 2);
-        offset = 4;
-    } else {
-        offset = 2;
-    }
-
-    if (cb) {
-        // ReadCallback
-        const result = cb(pos + offset, size);
-        buf.pos += offset + size;
-        return result;
-    } else {
-        // count()
-        buf.pos += offset;
-        return size;
-    }
-};

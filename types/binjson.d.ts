@@ -57,8 +57,6 @@ export declare module binjson {
 
         tag(): number;
 
-        count(): number;
-
         readI32(): number;
 
         readF64(): number;
@@ -79,8 +77,6 @@ export declare module binjson {
         prepare(size: number): WriteBuf;
 
         tag(tag: number): void;
-
-        count(count: number): void;
 
         writeI32(value: number): void;
 
