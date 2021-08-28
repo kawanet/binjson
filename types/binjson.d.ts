@@ -18,8 +18,7 @@ export declare module binjson {
     }
 
     interface Options {
-        handler?: Handler<any>;
-        handlers?: Handler<any>[];
+        handler?: Handler<any> | Handler<any>[];
     }
 
     interface Handlers {

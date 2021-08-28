@@ -45,17 +45,17 @@ describe(TITLE, () => {
             assert.equal(decoded.toString(), "val=101 tag=201");
         }
         {
-            const myJSON = binJSON.create({handlers: [handler202, handler203]});
+            const myJSON = binJSON.create({handler: [handler202, handler203]});
             const decoded = myJSON.decode(myJSON.encode(new MyClass(102)));
             assert.equal(decoded.toString(), "val=102 tag=202");
         }
         {
-            const myJSON = binJSON.create({handlers: [handler203, handler202]});
+            const myJSON = binJSON.create({handler: [handler203, handler202]});
             const decoded = myJSON.decode(myJSON.encode(new MyClass(103)));
             assert.equal(decoded.toString(), "val=103 tag=203");
         }
         {
-            const myJSON = binJSON.create({handler: handler201, handlers: [handler202, handler203]});
+            const myJSON = binJSON.create({handler: [handler201, handler202, handler203]});
             const decoded = myJSON.decode(myJSON.encode(new MyClass(104)));
             assert.equal(decoded.toString(), "val=104 tag=201");
         }

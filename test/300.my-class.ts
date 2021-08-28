@@ -52,7 +52,7 @@ describe(TITLE, () => {
     });
 
     it("handlers", () => {
-        const myJSON = binJSON.create({handlers: [myHandler, handlers.Date]});
+        const myJSON = binJSON.create({handler: [myHandler, handlers.Date]});
         const date = new Date("2021-08-21T00:00:00.000Z");
         const data = {foo: new MyClass(789), date: date};
 

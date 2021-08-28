@@ -76,11 +76,13 @@ function updateRouter(router: WriteRouter, options: binjson.Options): WriteRoute
     if (!router) router = defaultRouter;
 
     if (options) {
-        const {handler, handlers} = options;
+        const {handler} = options;
 
-        handlers?.slice().reverse().forEach(h => (router = addHandler(router, h)));
-
-        router = addHandler(router, handler);
+        if (Array.isArray(handler)) {
+            handler?.slice().reverse().forEach(h => (router = addHandler(router, h)));
+        } else {
+            router = addHandler(router, handler);
+        }
     }
 
     return router;
