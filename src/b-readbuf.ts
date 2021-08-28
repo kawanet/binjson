@@ -36,11 +36,19 @@ export class ReadBuf implements binjson.ReadBuf {
     }
 
     readData32<T>(fn: (data: Uint8Array, offset: number, length: number) => T): T {
-        return read(this, (offset, length) => fn(this.data, offset, length));
+        const buf = this;
+        const {pos} = buf;
+        const length = buf.view.getUint32(pos + 1);
+        buf.pos += 5 + length;
+        return fn(buf.data, pos + 5, length);
     }
 
     readView32<T>(fn: (view: DataView, offset: number, length: number) => T): T {
-        return read(this, (offset, length) => fn(this.view, offset, length));
+        const buf = this;
+        const {pos} = buf;
+        const length = this.view.getUint32(pos + 1);
+        this.pos += 5 + length;
+        return fn(buf.view, pos + 5, length);
     }
 }
 

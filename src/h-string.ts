@@ -23,7 +23,6 @@ export const hString0: binjson.Handler<string> = {
         const {length} = value;
         buf = buf.prepare(8 + length * 3);
         buf.tag(Tag.kString16);
-        if (!length) return buf.pos += 2;
         buf.writeData32(length * 3, (array, offset) => writeString(array, offset, value));
     },
 };
@@ -43,7 +42,7 @@ export const hString: binjson.Handler<string> = {
         const {length} = value;
         buf = buf.prepare(8 + length * 3);
         buf.tag(Tag.kString16);
-        if (!length) return buf.pos += 2;
+        // if (!length) return buf.pos += 2;
         buf.writeData32(length * 3, (array, offset) => writeString(array, offset, value));
     },
 };

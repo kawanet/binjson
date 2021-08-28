@@ -21,8 +21,6 @@ export const hWideString: binjson.Handler<string> = {
         const bytes = length << 1;
         buf = buf.prepare(6 + bytes);
         buf.tag(Tag.kWideString16);
-        if (!length) return buf.pos += 2;
-
         buf.writeView32(bytes, (view, offset) => writeString(view, offset, value));
     },
 };
