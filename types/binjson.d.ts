@@ -38,7 +38,7 @@ export declare module binjson {
     type Handler<T> = ReadHandler<T> & WriteHandler<T>;
 
     interface ReadHandler<T> {
-        tag?: number;
+        tag?: number | number[];
 
         read: (buf: ReadBuf, tag: number, next: () => any) => T;
     }

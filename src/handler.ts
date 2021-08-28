@@ -16,14 +16,13 @@ import * as XT from "./h-typedarray";
 
 type ReadHandler<T> = binjson.ReadHandler<T>;
 type WriteHandler<T> = binjson.WriteHandler<T>;
-type Handler<T> = binjson.Handler<T>;
 type WriteRouter<T> = (value: T) => binjson.WriteHandler<T>;
 
-const {hBeginDenseJSArray, hEndDenseJSArray} = A;
+const {hArrayBegin, hArrayEnd} = A;
 const {hFalse, hTrue} = B;
 const {hDate, hNull, hRegExp, hUndefined} = M;
 const {hBigInt, hDouble, hInt32} = N;
-const {hBeginJSObject, hEndJSObject} = O;
+const {hObjectBegin, hObjectEnd} = O;
 const {hString} = S;
 const {hWideString} = W;
 const {hNodeBuffer} = XB;
@@ -78,27 +77,34 @@ export const handlers: binjson.Handlers = {
  */
 
 export function initReadRouter(): (tag: number) => ReadHandler<any> {
-    const readers: Handler<any>[] = [];
+    const readers: ReadHandler<any>[] = [];
 
     [
+        hArrayBegin,
         hArrayBufferView,
-        hBeginDenseJSArray,
-        hBeginJSObject,
+        hArrayEnd,
         hBigInt,
         hDate,
         hDouble,
-        hEndDenseJSArray,
-        hEndJSObject,
         hFalse,
         hInt32,
         hNodeBuffer,
         hNull,
+        hObjectBegin,
+        hObjectEnd,
         hRegExp,
-        hTrue,
-        hWideString,
-        hUndefined,
         hString,
-    ].forEach(h => readers[h.tag] = h);
+        hTrue,
+        hUndefined,
+        hWideString,
+    ].forEach(h => {
+        const {tag} = h;
+        if (Array.isArray(tag)) {
+            for (const t of tag) readers[t] = h;
+        } else {
+            readers[tag] = h
+        }
+    });
 
     return tag => readers[tag];
 }
@@ -129,7 +135,7 @@ export function initWriteRouter(): (value: any) => WriteHandler<any> {
         if (value === null) {
             handler = hNull;
         } else if (Array.isArray(value)) {
-            handler = hBeginDenseJSArray;
+            handler = hArrayBegin;
         } else if (value instanceof Boolean) {
             handler = hBooleanObject;
         } else if (value instanceof Number) {
@@ -139,7 +145,7 @@ export function initWriteRouter(): (value: any) => WriteHandler<any> {
         } else if (isArrayBufferView(value)) {
             handler = hArrayBufferView;
         } else {
-            handler = hBeginJSObject;
+            handler = hObjectBegin;
         }
 
         return handler;

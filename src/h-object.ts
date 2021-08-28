@@ -10,7 +10,7 @@ import {hUndefined} from "./h-misc";
  * Object
  */
 
-export const hBeginJSObject: binjson.Handler<object> = {
+export const hObjectBegin: binjson.Handler<object> = {
     tag: Tag.kObjectBegin,
     allowToJSON: true,
 
@@ -21,7 +21,7 @@ export const hBeginJSObject: binjson.Handler<object> = {
 
         while (1) {
             if (buf.tag() === Tag.kObjectEnd) {
-                buf.pos += 2;
+                buf.pos++;
                 break;
             }
             const val = next();
@@ -46,11 +46,11 @@ export const hBeginJSObject: binjson.Handler<object> = {
             }
         }
 
-        hEndJSObject.write(buf, null, next);
+        hObjectEnd.write(buf, null, next);
     }
 };
 
-export const hEndJSObject: binjson.Handler<unknown> = {
+export const hObjectEnd: binjson.Handler<unknown> = {
     tag: Tag.kObjectEnd,
 
     read: (buf) => {
@@ -58,8 +58,8 @@ export const hEndJSObject: binjson.Handler<unknown> = {
     },
 
     write: (buf) => {
-        buf = buf.prepare(2);
+        buf = buf.prepare(1);
         buf.tag(Tag.kObjectEnd);
-        buf.pos += 2;
+        buf.pos++;
     },
 };

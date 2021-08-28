@@ -44,7 +44,11 @@ function updateRouter(router: ReadRouter, options: binjson.Options): ReadRouter 
 
 function addHandler(router: ReadRouter, handler: binjson.ReadHandler<any>): ReadRouter {
     let tag = handler?.tag;
-    if (tag == null) return router;
-    tag &= 255;
-    return (t) => (tag === t) ? handler : router(t);
+    const list: (typeof handler)[] = new Array(256);
+    if (Array.isArray(tag)) {
+        for (const t of tag) list[t & 255] = handler;
+    } else if (tag != null) {
+        list[tag & 255] = handler;
+    }
+    return t => (list[t] || router(t));
 }

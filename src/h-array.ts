@@ -4,15 +4,13 @@
 
 import type {binjson} from "../types/binjson";
 import {Tag} from "./enum";
-import * as M from "./h-misc";
-
-const {hNull} = M;
+import {hNull} from "./h-misc";
 
 /**
  * Array
  */
 
-export const hBeginDenseJSArray: binjson.Handler<any[]> = {
+export const hArrayBegin: binjson.Handler<any[]> = {
     tag: Tag.kArrayBegin,
     allowToJSON: true,
 
@@ -40,11 +38,11 @@ export const hBeginDenseJSArray: binjson.Handler<any[]> = {
             next(item, idx++, array) || hNull.write(buf, null, next);
         }
 
-        hEndDenseJSArray.write(buf, null, next);
+        hArrayEnd.write(buf, null, next);
     }
 };
 
-export const hEndDenseJSArray: binjson.Handler<unknown> = {
+export const hArrayEnd: binjson.Handler<unknown> = {
     tag: Tag.kArrayEnd,
 
     read: (buf) => {
@@ -52,7 +50,7 @@ export const hEndDenseJSArray: binjson.Handler<unknown> = {
     },
 
     write: (buf) => {
-        buf = buf.prepare(2);
+        buf = buf.prepare(1);
         buf.tag(Tag.kArrayEnd);
         buf.pos++;
     },
