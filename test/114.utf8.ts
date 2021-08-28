@@ -9,7 +9,7 @@ describe(TITLE, () => {
     const myJSON = binJSON.create({handler: handlers.UTF8});
 
     it("kString16", () => {
-        const data = new Uint8Array([0x53, 0x00, 0x00, 0x00, 0x03, 0x41, 0x42, 0x43]);
+        const data = new Uint8Array([0x53, 0x00, 0x03, 0x41, 0x42, 0x43]);
         const decoded = binJSON.decode(data);
         assert.deepEqual(decoded, "ABC");
     });

@@ -34,16 +34,26 @@ export const hString0: binjson.Handler<string> = {
 export const hString: binjson.Handler<string> = {
     tag: [Tag.kString16, Tag.kString32],
 
-    read: (buf) => buf.readData32(readString),
+    read: (buf, tag) => {
+        if (tag === Tag.kString16) {
+            return buf.readData16(readString);
+        } else if (tag === Tag.kString32) {
+            return buf.readData32(readString);
+        }
+    },
 
     match: (value) => ("string" === typeof value),
 
     write: (buf, value) => {
-        const {length} = value;
-        buf = buf.prepare(8 + length * 3);
-        buf.tag(Tag.kString16);
-        // if (!length) return buf.pos += 2;
-        buf.writeData32(length * 3, (array, offset) => writeString(array, offset, value));
+        const length = value.length * 3;
+        buf = buf.prepare(5 + length);
+        if (length < 0x10000) {
+            buf.tag(Tag.kString16);
+            buf.writeData16(length, (array, offset) => writeString(array, offset, value));
+        } else {
+            buf.tag(Tag.kString32);
+            buf.writeData32(length, (array, offset) => writeString(array, offset, value));
+        }
     },
 };
 

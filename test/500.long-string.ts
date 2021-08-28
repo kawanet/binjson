@@ -38,20 +38,22 @@ describe(TITLE, () => {
     test("S", twobyte, 3, 100, utf8JSON);
     test("S", twobyte, 3, 1000, utf8JSON);
     test("S", twobyte, 3, 10000, utf8JSON);
-    test("S", twobyte, 3, 100000, utf8JSON);
-    test("S", twobyte, 3, 1000000, utf8JSON);
+    test("^S", twobyte, 3, 100000, utf8JSON);
+    test("^S", twobyte, 3, 1000000, utf8JSON);
 
     function test(tag: string, src: string, byte: number, repeat: number, myJSON?: binjson.IBinJSON<any>): void {
         if (!myJSON) myJSON = binJSON; // default behavior
         let value = "";
         while (value.length < repeat) value += src;
         const size = value.length * byte;
+        const isCTRL = tag && (tag[0] === "^") ? 1 : 0;
+        const tagHEX = tag && (tag.charCodeAt(isCTRL) - (isCTRL * 64)).toString(16);
 
         it(`${byte} x ${repeat} bytes`, () => {
             const buf = myJSON.encode(value);
             assert.equal(ArrayBuffer.isView(buf), true, "ArrayBuffer.isView");
             assert.equal(buf.length > size, true, "byteLength");
-            if (tag) assert.equal(buf[0]?.toString(16), tag.charCodeAt(0).toString(16), "tag");
+            if (tagHEX) assert.equal(buf[0]?.toString(16), tagHEX, "tag");
 
             const rev = myJSON.decode(buf);
             assert.equal(typeof rev, typeof value);
