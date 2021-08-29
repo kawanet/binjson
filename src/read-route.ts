@@ -25,36 +25,6 @@ export const handlers: binjson.Handlers = {
     Undefined: hUndefined,
 };
 
-/**
- * default router for `decode()`.
- */
-
-export function initReadRouter(): ReadRouter {
-    const route = new ReadRoute();
-    route.add([
-        hArrayBegin,
-        hArrayBufferView,
-        hArrayEnd,
-        hBigInt,
-        hBuffer,
-        hDouble,
-        hDate,
-        hFalse,
-        hInt32,
-        hNull,
-        hNumber0,
-        hObjectBegin,
-        hObjectEnd,
-        hRegExp,
-        hString,
-        hTrue,
-        hUndefined,
-        hWideString,
-    ]);
-
-    return route.router();
-}
-
 export class ReadRoute {
     private readers: ReadHandler<any>[] = [];
     private extended: { [key: string]: ReadHandler<any> } = {};
@@ -84,6 +54,10 @@ export class ReadRoute {
         }
     }
 
+    /**
+     * ReadRouter for Tag
+     */
+
     router(base?: ReadRouter): (tag: number) => ReadHandler<any> {
         const {readers} = this;
         if (base) {
@@ -92,4 +66,43 @@ export class ReadRoute {
             return tag => readers[tag];
         }
     }
+
+    /**
+     * ReadRouter for SubTag
+     */
+
+    subRouter(base?: ReadRouter): (subtag: number) => ReadHandler<any> {
+        const {extended} = this;
+        if (base) {
+            return tag => (extended[tag >>> 0] || base(tag));
+        } else {
+            return tag => extended[tag >>> 0];
+        }
+    }
 }
+
+/**
+ * default router for `decode()`.
+ */
+
+export const defaultReadRoute = new ReadRoute();
+defaultReadRoute.add([
+    hArrayBegin,
+    hArrayBufferView,
+    hArrayEnd,
+    hBigInt,
+    hBuffer,
+    hDouble,
+    hDate,
+    hFalse,
+    hInt32,
+    hNull,
+    hNumber0,
+    hObjectBegin,
+    hObjectEnd,
+    hRegExp,
+    hString,
+    hTrue,
+    hUndefined,
+    hWideString,
+]);

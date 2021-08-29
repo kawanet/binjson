@@ -3,8 +3,8 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {initReadRouter, ReadRoute, ReadRouter} from "./read-route";
-import {initWriteRouter, WriteRoute, WriteRouter} from "./write-route";
+import {defaultReadRoute, ReadRoute, ReadRouter} from "./read-route";
+import {defaultWriteRoute, WriteRoute, WriteRouter} from "./write-route";
 
 export class Driver {
     readRouter: ReadRouter;
@@ -18,10 +18,8 @@ export class Driver {
     }
 }
 
-let defaultReadRouter: ReadRouter;
-
 function updateReadRouter(target: Driver, base: Driver, options: binjson.Options): void {
-    let router = base?.readRouter || defaultReadRouter || (defaultReadRouter = initReadRouter());
+    let router = base?.readRouter || defaultReadRoute.router();
 
     if (options?.handler) {
         const route = new ReadRoute();
@@ -32,10 +30,8 @@ function updateReadRouter(target: Driver, base: Driver, options: binjson.Options
     target.readRouter = router;
 }
 
-let defaultWriteRouter: WriteRouter;
-
 function updateWriteRouter(target: Driver, base: Driver, options: binjson.Options): void {
-    let router = base?.writeRouter || defaultWriteRouter || (defaultWriteRouter = initWriteRouter());
+    let router = base?.writeRouter || defaultWriteRoute.router();
 
     if (options?.handler) {
         const route = new WriteRoute();

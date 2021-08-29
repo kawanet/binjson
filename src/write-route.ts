@@ -65,7 +65,7 @@ const hStringObject: WriteHandler<string | String> = {
  * add missing handlers via `handler` option.
  */
 
-export function initWriteRouter(): (value: any) => WriteHandler<any> {
+function initWriteRouter(): (value: any) => WriteHandler<any> {
     return value => {
         switch (typeof value) {
             case "number":
@@ -106,7 +106,9 @@ export function initWriteRouter(): (value: any) => WriteHandler<any> {
 const isArrayBufferView = hArrayBufferView.match;
 
 export class WriteRoute {
-    route: WriteRouter;
+    constructor(private route?: WriteRouter) {
+        //
+    }
 
     add(handler: WriteHandler<any> | WriteHandler<any>[]): void {
         if (Array.isArray(handler)) {
@@ -135,3 +137,4 @@ const MERGE = (r1: WriteRouter, r2: WriteRouter): WriteRouter => {
     return r1 || r2;
 };
 
+export const defaultWriteRoute = new WriteRoute(initWriteRouter());
