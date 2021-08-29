@@ -54,3 +54,17 @@ function initHandlers() {
 }
 
 export const hArrayBufferView = initHandlers();
+
+export const hArrayBuffer: binjson.HandlerX<ArrayBuffer> = {
+    subtag: SubTag.ArrayBuffer,
+
+    read: (_subtag, next) => {
+        const data: Uint8Array = next();
+        const {buffer, byteOffset, byteLength} = data;
+        return buffer.slice(byteOffset, byteOffset + byteLength);
+    },
+
+    match: (value) => (value instanceof ArrayBuffer),
+
+    write: ((value, next) => next(toBinary(new Uint8Array(value)))),
+};

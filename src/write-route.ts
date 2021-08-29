@@ -12,7 +12,7 @@ import * as O from "./h-object";
 import * as S from "./h-string";
 import * as W from "./h-widestring";
 import * as X from "./h-binary";
-import {hArrayBufferView} from "./h-typedarray";
+import {hArrayBuffer, hArrayBufferView} from "./h-typedarray";
 import {Binary} from "./h-binary";
 
 type Handler<T> = binjson.Handler<T>;
@@ -185,5 +185,6 @@ const MERGEX = (r1: WriteRouterX, r2: WriteRouterX): WriteRouterX => {
 export const defaultWriteRoute = new WriteRoute(routeType);
 
 defaultWriteRoute.add([
-    hArrayBufferView
+    hArrayBuffer,
+    hArrayBufferView,
 ]);
