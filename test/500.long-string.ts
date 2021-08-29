@@ -41,6 +41,14 @@ describe(TITLE, () => {
     test("^S", twobyte, 3, 100000, utf8JSON);
     test("^S", twobyte, 3, 1000000, utf8JSON);
 
+    it("[string, number]", () => {
+        for (let i = 0; i < 256; i++) {
+            const source = [String.fromCharCode(i).repeat(i), i];
+            const decoded = binJSON.decode<typeof source>(binJSON.encode(source));
+            assert.deepEqual(decoded, source, `#${i}`);
+        }
+    });
+
     function test(tag: string, src: string, byte: number, repeat: number, myJSON?: binjson.IBinJSON<any>): void {
         if (!myJSON) myJSON = binJSON; // default behavior
         let value = "";

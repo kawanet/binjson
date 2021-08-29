@@ -15,7 +15,7 @@ describe(TITLE, () => {
         }
 
         toString() {
-            return `val=${this.val || "-"} tag=${this.tag || "-"}`;
+            return `val=${this.val || "-"} tag=0x${this.tag?.toString(16).toUpperCase() || ""}`;
         }
     }
 
@@ -31,33 +31,33 @@ describe(TITLE, () => {
         };
     }
 
-    const handler201 = makeHandler(201);
-    const handler202 = makeHandler(202);
-    const handler203 = makeHandler(203);
+    const handler22 = makeHandler(0x22);
+    const handler5B = makeHandler(0x5B);
+    const handler7B = makeHandler(0x7B);
 
     it("multiple handlers", () => {
         {
-            assert.equal(new MyClass(100).toString(), "val=100 tag=-")
+            assert.equal(new MyClass(100).toString(), "val=100 tag=0x")
         }
         {
-            const myJSON = binJSON.extend({handler: handler201});
+            const myJSON = binJSON.extend({handler: handler22});
             const decoded = myJSON.decode(myJSON.encode(new MyClass(101)));
-            assert.equal(decoded.toString(), "val=101 tag=201");
+            assert.equal(decoded.toString(), "val=101 tag=0x22");
         }
         {
-            const myJSON = binJSON.extend({handler: [handler202, handler203]});
+            const myJSON = binJSON.extend({handler: [handler5B, handler7B]});
             const decoded = myJSON.decode(myJSON.encode(new MyClass(102)));
-            assert.equal(decoded.toString(), "val=102 tag=202");
+            assert.equal(decoded.toString(), "val=102 tag=0x5B");
         }
         {
-            const myJSON = binJSON.extend({handler: [handler203, handler202]});
+            const myJSON = binJSON.extend({handler: [handler7B, handler5B]});
             const decoded = myJSON.decode(myJSON.encode(new MyClass(103)));
-            assert.equal(decoded.toString(), "val=103 tag=203");
+            assert.equal(decoded.toString(), "val=103 tag=0x7B");
         }
         {
-            const myJSON = binJSON.extend({handler: [handler201, handler202, handler203]});
+            const myJSON = binJSON.extend({handler: [handler22, handler5B, handler7B]});
             const decoded = myJSON.decode(myJSON.encode(new MyClass(104)));
-            assert.equal(decoded.toString(), "val=104 tag=201");
+            assert.equal(decoded.toString(), "val=104 tag=0x22");
         }
     });
 });

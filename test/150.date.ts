@@ -8,7 +8,7 @@ const TITLE = __filename.split("/").pop();
 describe(TITLE, () => {
     const myJSON = binJSON.extend({handler: handlers.Date});
 
-    it("kDate", () => {
+    it("SubTag.Date", () => {
         const raw = new Date(0);
         const data = new Uint8Array([0x24, 0xFA, 0xAA, 0xBC, 0x6E, 0x30]);
         const decoded = binJSON.decode(data);

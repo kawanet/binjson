@@ -12,9 +12,16 @@ describe(TITLE, () => {
         assert.deepEqual(decoded, true);
     });
 
+    // kNull
     test("?", 1, null);
+
+    // kTrue
     test("T", 1, true);
+
+    // kFalse
     test("F", 1, false);
+
+    // kNumber0
     test("0", 1, 0);
     test("1", 1, 1);
     test("2", 1, 2);
@@ -25,8 +32,12 @@ describe(TITLE, () => {
     test("7", 1, 7);
     test("8", 1, 8);
     test("9", 1, 9);
+
+    // kInt32
     test("I", 5, 10);
     test("I", 5, -1);
+
+    // kDouble
     test("N", 9, 0.5);
     test("N", 9, -0.5);
 

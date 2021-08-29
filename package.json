@@ -40,7 +40,10 @@
   ],
   "homepage": "https://github.com/kawanet/binjson#readme",
   "keywords": [
-    "Buffer",
+    "BJSON",
+    "JSONB",
+    "buffer-json",
+    "json-buffer",
     "msgpack"
   ],
   "license": "BSD-3-Clause",

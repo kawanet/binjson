@@ -4,8 +4,6 @@
 [![npm version](https://img.shields.io/npm/v/binjson)](https://www.npmjs.com/package/binjson)
 [![minified size](https://img.shields.io/bundlephobia/min/binjson)](https://cdn.jsdelivr.net/npm/binjson/dist/binjson.min.js)
 
-TBD
-
 ## SYNOPSIS
 
 ```js
@@ -50,7 +48,7 @@ const obj4 = bufJSON.decode(buf); // => object
 |----|----|----|----|----|
 | kPadding | `\0` | `00` | N/A ||
 | kUndefined | `_` | `5F` | undefined ||
-| kNull | `0` | `30` | null ||
+| kNull | `?` | `3F` | null ||
 | kTrue | `T` | `54` | boolean ||
 | kFalse | `F` | `46` | boolean ||
 | kInt32 | `I` | `49 xx xx xx xx` | number | int32 |
@@ -69,6 +67,9 @@ const obj4 = bufJSON.decode(buf); // => object
 | kBinary16 | `B` | `42 hh hh ...` | (Uint8Array) | binary |
 | kBinary32 | `^B` | `02 hh hh hh hh ...` | (Uint8Array) | binary |
 | kExtension | `$` | `24 hh hh hh hh ...` | any | packet |
+| (unused) | `"` `[` `{` | `22` `5B` `7B` |||
+
+`"` `[` `{` are not valid tags of binJSON to avoid confusion with JSON.
 
 ### SubTag
 

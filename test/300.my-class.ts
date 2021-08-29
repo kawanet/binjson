@@ -19,7 +19,7 @@ describe(TITLE, () => {
         }
     }
 
-    const MyTag = 255;
+    const MyTag = 0x22;
 
     const myHandler: binjson.Handler1<MyClass> = {
         tag: MyTag,
