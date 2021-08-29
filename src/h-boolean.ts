@@ -5,13 +5,11 @@
 import type {binjson} from "../types/binjson";
 import {Tag} from "./enum";
 
-type Handler<T> = binjson.Handler<T>;
-
 /**
  * true
  */
 
-export const hTrue: Handler<boolean> = {
+export const hTrue: binjson.Handler1<boolean> = {
     tag: Tag.kTrue,
 
     read: (buf) => {
@@ -31,7 +29,7 @@ export const hTrue: Handler<boolean> = {
  * false
  */
 
-export const hFalse: Handler<boolean> = {
+export const hFalse: binjson.Handler1<boolean> = {
     tag: Tag.kFalse,
 
     read: (buf) => {

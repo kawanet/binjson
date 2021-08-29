@@ -35,12 +35,6 @@ export const enum Tag {
     kArrayBegin = 0x28, // (
     kArrayEnd = 0x29, // )
     kExtension = 0x24, // $
-
-    // deprecated
-    kDate = 0x44, // D
-    kRegExp = 0x52, // R
-    kArrayBufferView = 0x56, // V
-    kNodeBuffer = 0x08, // '\b'
 }
 
 /**

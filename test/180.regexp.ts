@@ -16,8 +16,8 @@ describe(TITLE, () => {
         assert.deepEqual(binJSON.decode(binJSON.encode(re)), {});
     });
 
-    test("R", /reg/);
-    test("R", /regex/i);
+    test("$", /reg/);
+    test("$", /regex/i);
 
     function test(tag: string, value: RegExp): void {
         it(`${value}`, () => {

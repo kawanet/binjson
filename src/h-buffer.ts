@@ -3,47 +3,19 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {SubTag, Tag} from "./enum";
+import {SubTag} from "./enum";
+import {toBinary} from "./h-binary";
 
 /**
  * Node.js Buffer
  */
 
-export const hBuffer: binjson.Handler<Buffer> = {
-    tag: Tag.kNodeBuffer,
+export const hBuffer: binjson.HandlerX<Buffer> = {
     subtag: SubTag.Buffer,
 
-    read: (buf, tag) => {
-        const subtag = buf.readI32() >>> 0;
-        if (subtag !== SubTag.Buffer) return;
-
-        const cb = (array: Uint8Array, offset: number, length: number) => {
-            return Buffer.from(array.buffer, array.byteOffset + offset, length);
-        };
-
-        tag = buf.tag();
-        if (tag === Tag.kBinary16) {
-            return buf.readData16(cb);
-        } else if (tag === Tag.kBinary32) {
-            return buf.readData32(cb);
-        }
-    },
+    read: (_subtag, next) => Buffer.from(next()),
 
     match: value => Buffer.isBuffer(value),
 
-    write: (buf, value) => {
-        buf.tag(Tag.kNodeBuffer);
-        buf.writeI32(SubTag.Buffer);
-
-        const {buffer, byteLength, byteOffset} = value;
-        const data = Buffer.from(buffer, byteOffset, byteLength);
-
-        if (byteLength < 0x10000) {
-            buf.tag(Tag.kBinary16);
-            buf.insertData16(data);
-        } else {
-            buf.tag(Tag.kBinary32);
-            buf.insertData32(data);
-        }
-    }
+    write: (value, next) => next(toBinary(value)),
 };

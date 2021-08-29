@@ -19,7 +19,7 @@ for (let i: number = E.str0start; i < E.str0end; i++) tag.push(i);
  * UTF8
  */
 
-export const hString: binjson.Handler<string> = {
+export const hString: binjson.Handler1<string> = {
     tag: tag,
 
     read: (buf, tag) => {

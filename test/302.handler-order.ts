@@ -19,7 +19,7 @@ describe(TITLE, () => {
         }
     }
 
-    function makeHandler(tag: number): binjson.Handler<MyClass> {
+    function makeHandler(tag: number): binjson.Handler1<MyClass> {
         return {
             tag: tag,
             read: (buf) => new MyClass(buf.readI32(), tag),

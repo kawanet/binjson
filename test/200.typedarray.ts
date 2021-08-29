@@ -22,14 +22,14 @@ describe(TITLE, () => {
     it("kUint8Array", () => {
         assert(toHex([10, 11, 12, 13, 14, 15]), "0a-0b-0c-0d-0e-0f");
 
-        const data = new Uint8Array([0x56, 0xe6, 0xed, 0x42, 0xfd, 2, 0, 0, 0, 4, 0x41, 0x42, 0x43, 0x44]);
+        const data = new Uint8Array([0x24, 0xe6, 0xed, 0x42, 0xfd, 2, 0, 0, 0, 4, 0x41, 0x42, 0x43, 0x44]);
         const decoded = binJSON.decode(data);
         assert.equal(decoded instanceof Uint8Array, true);
         assert.deepEqual(toHex(decoded), "41-42-43-44");
     });
 
     it("kUint32Array", () => {
-        const data = new Uint8Array([0x56, 0xf9, 0x8d, 0xfe, 0x49, 2, 0, 0, 0, 4, 0x41, 0x42, 0x43, 0x44]);
+        const data = new Uint8Array([0x24, 0xf9, 0x8d, 0xfe, 0x49, 2, 0, 0, 0, 4, 0x41, 0x42, 0x43, 0x44]);
         const decoded = binJSON.decode(data);
         assert.equal(decoded instanceof Uint32Array, true);
         assert.deepEqual(toHex(decoded), "41-42-43-44");
@@ -96,8 +96,8 @@ describe(TITLE, () => {
                 for (let i = 0; i < size; i++) data[i] = filter(i);
 
                 const decoded = binJSON.decode(binJSON.encode(data));
+                assert.equal(decoded instanceof fn, true, decoded?.constructor?.name);
                 assert.equal(decoded?.length, size);
-                assert.equal(decoded instanceof fn, true);
                 assert.equal(toHex(decoded), toHex(data));
             });
         })

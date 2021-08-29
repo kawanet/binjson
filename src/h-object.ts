@@ -10,7 +10,7 @@ import {hUndefined} from "./h-misc";
  * Object
  */
 
-export const hObjectBegin: binjson.Handler<object> = {
+export const hObjectBegin: binjson.Handler1<object> = {
     tag: Tag.kObjectBegin,
     allowToJSON: true,
 
@@ -50,7 +50,7 @@ export const hObjectBegin: binjson.Handler<object> = {
     }
 };
 
-export const hObjectEnd: binjson.Handler<unknown> = {
+export const hObjectEnd: binjson.Handler1<unknown> = {
     tag: Tag.kObjectEnd,
 
     read: (buf) => {

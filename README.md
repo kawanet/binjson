@@ -68,7 +68,7 @@ const obj4 = bufJSON.decode(buf); // => object
 | kWideString32 | `^W` | `17 hh hh hh hh ...` | string | UTF-16 |
 | kBinary16 | `B` | `42 hh hh ...` | (Uint8Array) | binary |
 | kBinary32 | `^B` | `02 hh hh hh hh ...` | (Uint8Array) | binary |
-| kExt4 | `$` | `24 hh hh hh hh ...` | any | packet |
+| kExtension | `$` | `24 hh hh hh hh ...` | any | packet |
 
 ### SubTag
 

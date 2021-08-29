@@ -4,18 +4,24 @@
 
 import {WriteBuf} from "./write-buf";
 import {Driver} from "./driver";
+import {Tag} from "./enum";
+import {routeObject} from "./write-route";
 
 export function encode(driver: Driver, value: any, buf: WriteBuf): Uint8Array {
-    const {writeRouter} = driver;
+    const {writeRouter1, writeRouterX} = driver;
     const start = buf;
     const stack: object[] = [];
 
     const next = (value: any, key?: string): boolean => {
         // pickup a valid handler for the value
-        const handler = writeRouter(value);
-        if (!handler) return false; // fail
-
+        let handler1 = writeRouter1(value);
         const isObject = value && ("object" === typeof value);
+        const handlerX = !handler1 && isObject && writeRouterX && writeRouterX(value);
+        if (!handler1 && !handlerX) {
+            handler1 = routeObject(value);
+            if (!handler1) return false; // fail
+        }
+
         if (isObject) {
             // circular structure
             for (let v of stack) {
@@ -23,7 +29,7 @@ export function encode(driver: Driver, value: any, buf: WriteBuf): Uint8Array {
             }
 
             // isNotInternalCall = (key !== null)
-            if ((key !== null) && handler.allowToJSON && "function" === typeof value.toJSON) {
+            if ((key !== null) && handler1 && handler1.allowToJSON && "function" === typeof value.toJSON) {
                 value = value.toJSON(String(key));
                 return next(value, key);
             }
@@ -31,11 +37,17 @@ export function encode(driver: Driver, value: any, buf: WriteBuf): Uint8Array {
             stack.push(value);
         }
 
-        // request 10 byte buffer available at least
-        buf = buf.prepare(10);
-
         // perform encoding
-        handler.write(buf, value, next);
+        if (handlerX) {
+            buf.prepare(5);
+            buf.tag(Tag.kExtension);
+            buf.writeI32(handlerX.subtag);
+            handlerX.write(value, next);
+        } else {
+            // request 10 byte buffer available at least
+            buf = buf.prepare(10);
+            handler1.write(buf, value, next);
+        }
 
         // release
         if (isObject) stack.pop();

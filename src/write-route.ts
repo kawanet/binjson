@@ -10,11 +10,18 @@ import * as M from "./h-misc";
 import * as N from "./h-number";
 import * as O from "./h-object";
 import * as S from "./h-string";
-import * as T from "./h-typedarray";
 import * as W from "./h-widestring";
+import * as X from "./h-binary";
+import {hArrayBufferView} from "./h-typedarray";
+import {Binary} from "./h-binary";
 
-export type WriteHandler<T> = binjson.WriteHandler<T>;
-export type WriteRouter = (value: any) => binjson.WriteHandler<any>;
+type Handler<T> = binjson.Handler<T>;
+type Handler1<T> = binjson.Handler1<T>;
+type WriteHandler1<T> = Pick<Handler1<T>, "allowToJSON" | "match" | "write">;
+type HandlerX<T> = binjson.HandlerX<T>;
+
+export type WriteRouter1 = (value: any) => WriteHandler1<any>;
+export type WriteRouterX = (value: any) => HandlerX<any>;
 
 const {hArrayBegin} = A;
 const {hFalse, hTrue} = B;
@@ -22,26 +29,39 @@ const {hNull} = M;
 const {hBigInt, hDouble, hInt32, hNumber0} = N;
 const {hObjectBegin} = O;
 const {hString} = S;
-const {hArrayBufferView} = T;
 const {hWideString} = W;
+const {hBinary} = X;
 
-const rBoolean: WriteRouter = (v: boolean) => (v ? hTrue : hFalse);
+const isHandler1 = (handler: any): handler is Handler1<any> => !!handler?.tag;
+const isHandlerX = (handler: any): handler is HandlerX<any> => !!handler?.subtag;
 
-const hBooleanObject: WriteHandler<boolean | Boolean> = {
+/**
+ * boolean
+ */
+
+const routeBoolean: WriteRouter1 = (v: boolean) => (v ? hTrue : hFalse);
+
+const hBooleanObject: WriteHandler1<boolean | Boolean> = {
     allowToJSON: true,
+
     write: (buf, value, next) => {
         const bool = Boolean(+value);
-        return rBoolean(bool).write(buf, bool, next);
+        return routeBoolean(bool).write(buf, bool, next);
     },
 };
 
-const rNumber: WriteRouter = (v: number) => ((v | 0) == v) ? ((0 <= v && v <= 9) ? hNumber0 : hInt32) : (isFinite(v) ? hDouble : hNull);
+/**
+ * number
+ */
 
-const hNumberObject: WriteHandler<number | Number> = {
+const routeNumber: WriteRouter1 = (v: number) => ((v | 0) == v) ? ((0 <= v && v <= 9) ? hNumber0 : hInt32) : (isFinite(v) ? hDouble : hNull);
+
+const hNumberObject: WriteHandler1<number | Number> = {
     allowToJSON: true,
+
     write: (buf, value, next) => {
         const num = Number(value);
-        return rNumber(num).write(buf, num, next);
+        return routeNumber(num).write(buf, num, next);
     },
 };
 
@@ -50,13 +70,14 @@ const hNumberObject: WriteHandler<number | Number> = {
  * hTwoByteString has better performance on long string.
  */
 
-const rString: WriteRouter = (v: string) => ((v.length <= 10) ? hString : hWideString);
+const routeString: WriteRouter1 = (v: string) => ((v.length <= 10) ? hString : hWideString);
 
-const hStringObject: WriteHandler<string | String> = {
+const hStringObject: WriteHandler1<string | String> = {
     allowToJSON: true,
+
     write: (buf, value, next) => {
         const str = String(value);
-        return rString(str).write(buf, str, next)
+        return routeString(str).write(buf, str, next)
     },
 };
 
@@ -65,24 +86,28 @@ const hStringObject: WriteHandler<string | String> = {
  * add missing handlers via `handler` option.
  */
 
-function initWriteRouter(): (value: any) => WriteHandler<any> {
-    return value => {
-        switch (typeof value) {
-            case "number":
-                return rNumber(value);
-            case "string":
-                return rString(value);
-            case "boolean":
-                return rBoolean(value);
-            case "bigint":
-                return hBigInt;
-            case "object":
-                break; // go below
-            default:
-                return; // unsupported
-        }
+const routeType: WriteRouter1 = value => {
+    switch (typeof value) {
+        case "number":
+            return routeNumber(value);
+        case "string":
+            return routeString(value);
+        case "object":
+            if (value === null) return hNull;
+            // Binary is a wrapper for Uint8Array
+            if (value instanceof Binary) return hBinary;
+            break;
+        case "boolean":
+            return routeBoolean(value);
+        case "bigint":
+            return hBigInt;
+    }
+};
 
-        let handler: WriteHandler<any>;
+export const routeObject: WriteRouter1 = value => {
+    if ("object" === typeof value) {
+        let handler: WriteHandler1<any>;
+
         if (value === null) {
             handler = hNull;
         } else if (Array.isArray(value)) {
@@ -93,38 +118,45 @@ function initWriteRouter(): (value: any) => WriteHandler<any> {
             handler = hNumberObject;
         } else if (value instanceof String) {
             handler = hStringObject;
-        } else if (isArrayBufferView(value)) {
-            handler = hArrayBufferView;
         } else {
             handler = hObjectBegin;
         }
 
         return handler;
     }
-}
-
-const isArrayBufferView = hArrayBufferView.match;
+};
 
 export class WriteRoute {
-    constructor(private route?: WriteRouter) {
+    constructor(private route?: WriteRouter1, private routeX?: WriteRouterX) {
         //
     }
 
-    add(handler: WriteHandler<any> | WriteHandler<any>[]): void {
+    add(handler: Handler<any> | (Handler<any> | Handler<any>[])[]): void {
         if (Array.isArray(handler)) {
             return handler.slice().reverse().forEach(h => this.add(h));
         }
 
         if (!handler.match) return;
-        this.route = ADD(handler, this.route);
+
+        if (isHandler1(handler)) {
+            this.route = ADD1(handler, this.route);
+        }
+
+        if (isHandlerX(handler)) {
+            this.routeX = ADDX(handler, this.routeX);
+        }
     }
 
-    router(base?: WriteRouter): WriteRouter {
-        return MERGE(this.route, base);
+    router1(base?: WriteRouter1): WriteRouter1 {
+        return MERGE1(this.route, base);
+    }
+
+    routerX(base?: WriteRouterX): WriteRouterX {
+        return MERGEX(this.routeX, base);
     }
 }
 
-const ADD = (handler: WriteHandler<any>, router: WriteRouter): WriteRouter => {
+const ADD1 = (handler: Handler1<any>, router: WriteRouter1): WriteRouter1 => {
     if (router) {
         return (value) => handler.match(value) ? handler : router(value);
     } else {
@@ -132,9 +164,26 @@ const ADD = (handler: WriteHandler<any>, router: WriteRouter): WriteRouter => {
     }
 };
 
-const MERGE = (r1: WriteRouter, r2: WriteRouter): WriteRouter => {
+const ADDX = (handler: HandlerX<any>, router: WriteRouterX): WriteRouterX => {
+    if (router) {
+        return (value) => handler.match(value) ? handler : router(value);
+    } else {
+        return (value) => handler.match(value) ? handler : null;
+    }
+};
+
+const MERGE1 = (r1: WriteRouter1, r2: WriteRouter1): WriteRouter1 => {
     if (r1 && r2) return (value) => (r1(value) || r2(value));
     return r1 || r2;
 };
 
-export const defaultWriteRoute = new WriteRoute(initWriteRouter());
+const MERGEX = (r1: WriteRouterX, r2: WriteRouterX): WriteRouterX => {
+    if (r1 && r2) return (value) => (r1(value) || r2(value));
+    return r1 || r2;
+};
+
+export const defaultWriteRoute = new WriteRoute(routeType);
+
+defaultWriteRoute.add([
+    hArrayBufferView
+]);

@@ -3,121 +3,54 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {Tag, SubTag} from "./enum";
+import {SubTag} from "./enum";
+import {toBinary} from "./h-binary";
 
-type Handler<T> = binjson.Handler<T>;
+type FromFn = (buffer: ArrayBuffer, byteOffset: number, length: number) => ArrayBufferView;
+type MatchFn = (value: any) => boolean;
 
-/**
- * subset interface of TypedArray constructor
- */
+function initHandlers() {
+    const handlers: binjson.HandlerX<ArrayBufferView>[] = [];
 
-interface C {
-    new(buffer: ArrayBuffer, byteOffset?: number, length?: number): ArrayBufferView;
+    const addType = (size: number, subtag: number, from: FromFn, match: MatchFn): void => {
+        const handler = {} as binjson.HandlerX<ArrayBufferView>;
 
-    BYTES_PER_ELEMENT?: number;
-}
+        handler.subtag = subtag;
 
-/**
- * Definition
- */
-
-interface Type {
-    tag: number;
-
-    byte: number;
-
-    // Buffer.from()
-    from: (buffer: ArrayBuffer, byteOffset?: number, length?: number) => ArrayBufferView;
-
-    // Buffer.isBuffer()
-    match: (value: ArrayBufferView) => boolean;
-}
-
-const typeList: Type[] = [];
-const tagIndex: Type[] = [];
-
-const addType = (tag: number, fn: C): Type => {
-    const def = {} as Type;
-    def.tag = tag;
-    def.byte = fn.BYTES_PER_ELEMENT || 1;
-    def.from = ((buffer, byteOffset, length) => new fn(buffer, byteOffset, length));
-    def.match = (value => value instanceof fn);
-    typeList.push(def);
-    tagIndex[tag] = def;
-    return def;
-};
-
-addType(SubTag.Int8Array, Int8Array);
-addType(SubTag.Uint8Array, Uint8Array);
-addType(SubTag.Uint8ClampedArray, Uint8ClampedArray);
-addType(SubTag.Int16Array, Int16Array);
-addType(SubTag.Uint16Array, Uint16Array);
-addType(SubTag.Int32Array, Int32Array);
-addType(SubTag.Uint32Array, Uint32Array);
-addType(SubTag.Float32Array, Float32Array);
-addType(SubTag.Float64Array, Float64Array);
-if ("undefined" !== typeof BigInt64Array) addType(SubTag.BigInt64Array, BigInt64Array);
-if ("undefined" !== typeof BigUint64Array) addType(SubTag.BigUint64Array, BigUint64Array);
-addType(SubTag.DataView, DataView);
-
-const defaultType = tagIndex[SubTag.Uint8Array];
-
-const pickSubTag = (obj: ArrayBufferView): number => {
-    for (const type of typeList) {
-        if (type.match(obj)) return type.tag;
-    }
-};
-
-/**
- * TypedArray
- */
-
-export const hArrayBufferView: Handler<ArrayBufferView> = {
-    tag: Tag.kArrayBufferView,
-
-    read: (buf, tag) => {
-        const subtag = buf.readI32() >>> 0;
-        const type = tagIndex[subtag] || defaultType;
-        const {from, byte} = type;
-
-        const cb = (array: Uint8Array, offset: number, length: number) => {
-            let {buffer, byteOffset} = array;
-            const start = byteOffset + offset;
+        handler.read = (_, next) => {
+            let data: Uint8Array = next();
 
             // copy memory for Uint16Array etc.
             // RangeError: start offset of XX should be a multiple of XX
-            if (byte > 1) {
-                return from(buffer.slice(start, start + length));
+            if (data.byteOffset % size) {
+                data = data.slice()
             }
 
-            // share memory for Uint8Array etc.
-            return from(buffer, start, length / byte);
+            const {buffer, byteOffset, byteLength} = data;
+            return from(buffer, byteOffset, byteLength / size);
         };
 
-        tag = buf.tag();
-        if (tag === Tag.kBinary16) {
-            return buf.readData16(cb);
-        } else if (tag === Tag.kBinary32) {
-            return buf.readData32(cb);
-        }
-    },
+        handler.match = match;
 
-    match: value => ArrayBuffer.isView(value),
+        handler.write = (value, next) => next(toBinary(value));
 
-    write: (buf, value) => {
-        const subtag = pickSubTag(value);
-        buf.tag(Tag.kArrayBufferView);
-        buf.writeI32(subtag);
+        handlers.push(handler);
+    };
 
-        const {buffer, byteLength, byteOffset} = value;
-        const data = new Uint8Array(buffer, byteOffset, byteLength);
+    addType(1, SubTag.Int8Array, (b, o, l) => new Int8Array(b, o, l), v => (v instanceof Int8Array));
+    addType(1, SubTag.Uint8Array, (b, o, l) => new Uint8Array(b, o, l), v => (v instanceof Uint8Array));
+    addType(1, SubTag.Uint8ClampedArray, (b, o, l) => new Uint8ClampedArray(b, o, l), v => (v instanceof Uint8ClampedArray));
+    addType(2, SubTag.Int16Array, (b, o, l) => new Int16Array(b, o, l), v => (v instanceof Int16Array));
+    addType(2, SubTag.Uint16Array, (b, o, l) => new Uint16Array(b, o, l), v => (v instanceof Uint16Array));
+    addType(4, SubTag.Int32Array, (b, o, l) => new Int32Array(b, o, l), v => (v instanceof Int32Array));
+    addType(4, SubTag.Uint32Array, (b, o, l) => new Uint32Array(b, o, l), v => (v instanceof Uint32Array));
+    addType(4, SubTag.Float32Array, (b, o, l) => new Float32Array(b, o, l), v => (v instanceof Float32Array));
+    addType(8, SubTag.Float64Array, (b, o, l) => new Float64Array(b, o, l), v => (v instanceof Float64Array));
+    addType(8, SubTag.BigInt64Array, (b, o, l) => new BigInt64Array(b, o, l), v => (v instanceof BigInt64Array));
+    addType(8, SubTag.BigUint64Array, (b, o, l) => new BigUint64Array(b, o, l), v => (v instanceof BigUint64Array));
+    addType(1, SubTag.DataView, (b, o, l) => new DataView(b, o, l), v => (v instanceof DataView));
 
-        if (byteLength < 0x10000) {
-            buf.tag(Tag.kBinary16);
-            buf.insertData16(data);
-        } else {
-            buf.tag(Tag.kBinary32);
-            buf.insertData32(data);
-        }
-    }
-};
+    return handlers;
+}
+
+export const hArrayBufferView = initHandlers();

@@ -5,8 +5,6 @@
 import type {binjson} from "../types/binjson";
 import {Tag} from "./enum";
 
-type Handler<T> = binjson.Handler<T>;
-
 const hNumber0tag: number[] = new Array(10);
 for (let i = 0; i < 10; i++) hNumber0tag[i] = Tag.kNumber0 + i;
 
@@ -14,7 +12,7 @@ for (let i = 0; i < 10; i++) hNumber0tag[i] = Tag.kNumber0 + i;
  * 0 to 9
  */
 
-export const hNumber0: Handler<number> = {
+export const hNumber0: binjson.Handler1<number> = {
     tag: hNumber0tag,
 
     read: (buf, tag) => {
@@ -32,7 +30,7 @@ export const hNumber0: Handler<number> = {
  * signed integer
  */
 
-export const hInt32: Handler<number> = {
+export const hInt32: binjson.Handler1<number> = {
     tag: Tag.kInt32,
 
     read: (buf) => buf.readI32(),
@@ -47,7 +45,7 @@ export const hInt32: Handler<number> = {
  * float number
  */
 
-export const hDouble: Handler<number> = {
+export const hDouble: binjson.Handler1<number> = {
     tag: Tag.kDouble,
 
     read: (buf) => buf.readF64(),
@@ -62,7 +60,7 @@ export const hDouble: Handler<number> = {
  * big integer
  */
 
-export const hBigInt: Handler<bigint> = {
+export const hBigInt: binjson.Handler1<bigint> = {
     tag: Tag.kBigInt,
 
     read: (buf, _, next) => {

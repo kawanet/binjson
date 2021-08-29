@@ -34,22 +34,28 @@ export declare module binjson {
      * interfaces below are needed extension developers but not for library users.
      */
 
-    type Handler<T> = ReadHandler<T> & WriteHandler<T>;
+    type Handler<T> = Handler1<T> | HandlerX<T>;
 
-    interface ReadHandler<T> {
-        tag?: number | number[];
-
-        subtag?: number | number[];
+    interface Handler1<T> {
+        tag: number | number[];
 
         read: (buf: ReadBuf, tag: number, next: () => any) => T;
-    }
 
-    interface WriteHandler<T> {
         match?: (value: any) => boolean;
 
         write: (buf: WriteBuf, value: T, next: (value: any, key?: number | string, parent?: any) => boolean) => void;
 
         allowToJSON?: boolean;
+    }
+
+    interface HandlerX<T> {
+        subtag: number;
+
+        read: (subtag: number, next: () => any) => T;
+
+        match: (value: any) => boolean;
+
+        write: (value: T, next: (value: any) => void) => void;
     }
 
     interface ReadBuf {

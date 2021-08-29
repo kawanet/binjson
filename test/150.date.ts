@@ -10,7 +10,7 @@ describe(TITLE, () => {
 
     it("kDate", () => {
         const raw = new Date(0);
-        const data = new Uint8Array([0x44, 0xFA, 0xAA, 0xBC, 0x6E, 0x30]);
+        const data = new Uint8Array([0x24, 0xFA, 0xAA, 0xBC, 0x6E, 0x30]);
         const decoded = binJSON.decode(data);
         assert.equal(decoded instanceof Date, true);
         assert.deepEqual(decoded, raw);
@@ -21,10 +21,10 @@ describe(TITLE, () => {
         assert.equal(binJSON.decode(binJSON.encode(new Date(date))), date);
     });
 
-    test("D", new Date("2021-08-20T00:00:00.000Z"));
-    test("D", new Date("1969-12-31T23:59:59.999Z")); // -1
-    test("D", new Date("1970-01-01T00:00:00.000Z")); // 0
-    test("D", new Date("1970-01-01T00:00:00.001Z")); // +1
+    test("$", new Date("2021-08-20T00:00:00.000Z"));
+    test("$", new Date("1969-12-31T23:59:59.999Z")); // -1
+    test("$", new Date("1970-01-01T00:00:00.000Z")); // 0
+    test("$", new Date("1970-01-01T00:00:00.001Z")); // +1
 
     function test(tag: string, value: any): void {
         it(JSON.stringify(value), () => {

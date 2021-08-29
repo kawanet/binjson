@@ -9,7 +9,7 @@ import {Tag} from "./enum";
  * UTF16
  */
 
-export const hWideString: binjson.Handler<string> = {
+export const hWideString: binjson.Handler1<string> = {
     tag: [Tag.kWideString16, Tag.kWideString32],
 
     read: (buf, tag) => {
