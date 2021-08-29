@@ -16,9 +16,9 @@ import {hArrayBuffer, hArrayBufferView} from "./h-typedarray";
 import {Binary} from "./h-binary";
 
 type Handler<T> = binjson.Handler<T>;
-type Handler1<T> = binjson.Handler1<T>;
+type Handler1<T> = binjson.Handler1<T, any>;
 type WriteHandler1<T> = Pick<Handler1<T>, "allowToJSON" | "match" | "write">;
-type HandlerX<T> = binjson.HandlerX<T>;
+type HandlerX<T> = binjson.HandlerX<T, any>;
 
 export type WriteRouter1 = (value: any) => WriteHandler1<any>;
 export type WriteRouterX = (value: any) => HandlerX<any>;

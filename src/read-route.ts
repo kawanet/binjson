@@ -15,11 +15,11 @@ import {hFalse, hTrue} from "./h-boolean";
 import {hObjectBegin, hObjectEnd} from "./h-object";
 
 type Handler = binjson.Handler<any>;
-type Handler1 = binjson.Handler1<any>;
-type HandlerX = binjson.HandlerX<any>;
+type Handler1 = binjson.Handler1<any, any>;
+type HandlerX = binjson.HandlerX<any, any>;
 
-export type ReadRouter1 = (tag: number) => binjson.Handler1<any>;
-export type ReadRouterX = (subtag: number) => binjson.HandlerX<any>;
+export type ReadRouter1 = (tag: number) => binjson.Handler1<any, any>;
+export type ReadRouterX = (subtag: number) => binjson.HandlerX<any, any>;
 
 export const handlers: binjson.Handlers = {
     Buffer: hBuffer,

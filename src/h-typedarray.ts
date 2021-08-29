@@ -8,12 +8,13 @@ import {Binary} from "./h-binary";
 
 type FromFn = (buffer: ArrayBuffer, byteOffset: number, length: number) => ArrayBufferView;
 type MatchFn = (value: any) => boolean;
+type Handler = binjson.HandlerX<ArrayBufferView, Binary>;
 
 function initHandlers() {
-    const handlers: binjson.HandlerX<ArrayBufferView>[] = [];
+    const handlers: Handler[] = [];
 
     const addType = (size: number, subtag: number, from: FromFn, match: MatchFn): void => {
-        const handler = {} as binjson.HandlerX<ArrayBufferView>;
+        const handler = {} as Handler;
 
         handler.subtag = subtag;
 
@@ -55,12 +56,11 @@ function initHandlers() {
 
 export const hArrayBufferView = initHandlers();
 
-export const hArrayBuffer: binjson.HandlerX<ArrayBuffer> = {
+export const hArrayBuffer: binjson.HandlerX<ArrayBuffer, Binary> = {
     subtag: SubTag.ArrayBuffer,
 
     read: (_subtag, next) => {
-        const data: Binary = next();
-        const {buffer, byteOffset, byteLength} = data.subarray();
+        const {buffer, byteOffset, byteLength} = next().subarray();
         return buffer.slice(byteOffset, byteOffset + byteLength);
     },
 

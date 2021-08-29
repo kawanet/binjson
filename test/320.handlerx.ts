@@ -20,7 +20,7 @@ describe(TITLE, () => {
         }
     }
 
-    const myHandler: binjson.HandlerX<MyClass> = {
+    const myHandler: binjson.HandlerX<MyClass, number> = {
         subtag: murmur3(MyClass.name),
 
         read: (_subtag, next) => new MyClass(next()),

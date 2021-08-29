@@ -10,7 +10,7 @@ import {hNull} from "./h-misc";
  * Array
  */
 
-export const hArrayBegin: binjson.Handler1<any[]> = {
+export const hArrayBegin: binjson.Handler1<any[], any> = {
     tag: Tag.kArrayBegin,
     allowToJSON: true,
     match: (value) => Array.isArray(value),

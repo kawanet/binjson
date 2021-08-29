@@ -60,7 +60,7 @@ export const hDouble: binjson.Handler1<number> = {
  * big integer
  */
 
-export const hBigInt: binjson.Handler1<bigint> = {
+export const hBigInt: binjson.Handler1<bigint, string> = {
     tag: Tag.kBigInt,
 
     read: (buf, _, next) => {

@@ -30,7 +30,7 @@ export const hUndefined: binjson.Handler1<undefined> = {
  * Date
  */
 
-export const hDate: binjson.HandlerX<Date> = {
+export const hDate: binjson.HandlerX<Date, number> = {
     subtag: SubTag.Date,
 
     read: (_subtag, next) => new Date(next()),
@@ -64,7 +64,7 @@ export const hNull: binjson.Handler1<null> = {
  * RegExp
  */
 
-export const hRegExp: binjson.HandlerX<RegExp> = {
+export const hRegExp: binjson.HandlerX<RegExp, string> = {
     subtag: SubTag.RegExp,
 
     read: (_subtag, next) => {
