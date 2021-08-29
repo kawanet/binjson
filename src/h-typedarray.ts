@@ -4,7 +4,7 @@
 
 import type {binjson} from "../types/binjson";
 import {SubTag} from "./enum";
-import {toBinary} from "./h-binary";
+import {Binary} from "./h-binary";
 
 type FromFn = (buffer: ArrayBuffer, byteOffset: number, length: number) => ArrayBufferView;
 type MatchFn = (value: any) => boolean;
@@ -18,7 +18,7 @@ function initHandlers() {
         handler.subtag = subtag;
 
         handler.read = (_, next) => {
-            let data: Uint8Array = next();
+            let data: Uint8Array = next().subarray();
 
             // copy memory for Uint16Array etc.
             // RangeError: start offset of XX should be a multiple of XX
@@ -32,7 +32,7 @@ function initHandlers() {
 
         handler.match = match;
 
-        handler.write = (value, next) => next(toBinary(value));
+        handler.write = (value, next) => next(Binary.from(value));
 
         handlers.push(handler);
     };
@@ -46,8 +46,8 @@ function initHandlers() {
     addType(4, SubTag.Uint32Array, (b, o, l) => new Uint32Array(b, o, l), v => (v instanceof Uint32Array));
     addType(4, SubTag.Float32Array, (b, o, l) => new Float32Array(b, o, l), v => (v instanceof Float32Array));
     addType(8, SubTag.Float64Array, (b, o, l) => new Float64Array(b, o, l), v => (v instanceof Float64Array));
-    addType(8, SubTag.BigInt64Array, (b, o, l) => new BigInt64Array(b, o, l), v => (v instanceof BigInt64Array));
-    addType(8, SubTag.BigUint64Array, (b, o, l) => new BigUint64Array(b, o, l), v => (v instanceof BigUint64Array));
+    addType(8, SubTag.BigInt64Array, (b, o, l) => new BigInt64Array(b, o, l), ("undefined" !== typeof BigInt64Array) && (v => (v instanceof BigInt64Array)));
+    addType(8, SubTag.BigUint64Array, (b, o, l) => new BigUint64Array(b, o, l), ("undefined" !== typeof BigUint64Array) && (v => (v instanceof BigUint64Array)));
     addType(1, SubTag.DataView, (b, o, l) => new DataView(b, o, l), v => (v instanceof DataView));
 
     return handlers;
@@ -59,12 +59,12 @@ export const hArrayBuffer: binjson.HandlerX<ArrayBuffer> = {
     subtag: SubTag.ArrayBuffer,
 
     read: (_subtag, next) => {
-        const data: Uint8Array = next();
-        const {buffer, byteOffset, byteLength} = data;
+        const data: Binary = next();
+        const {buffer, byteOffset, byteLength} = data.subarray();
         return buffer.slice(byteOffset, byteOffset + byteLength);
     },
 
     match: (value) => (value instanceof ArrayBuffer),
 
-    write: ((value, next) => next(toBinary(new Uint8Array(value)))),
+    write: ((value, next) => next(Binary.from(new Uint8Array(value)))),
 };

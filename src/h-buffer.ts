@@ -4,7 +4,7 @@
 
 import type {binjson} from "../types/binjson";
 import {SubTag} from "./enum";
-import {toBinary} from "./h-binary";
+import {Binary} from "./h-binary";
 
 /**
  * Node.js Buffer
@@ -13,9 +13,9 @@ import {toBinary} from "./h-binary";
 export const hBuffer: binjson.HandlerX<Buffer> = {
     subtag: SubTag.Buffer,
 
-    read: (_subtag, next) => Buffer.from(next()),
+    read: (_subtag, next) => Buffer.from(next().subarray()),
 
     match: value => Buffer.isBuffer(value),
 
-    write: (value, next) => next(toBinary(value)),
+    write: (value, next) => next(Binary.from(value)),
 };
