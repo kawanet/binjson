@@ -18,7 +18,7 @@ function initHandlers() {
 
         handler.subtag = subtag;
 
-        handler.read = (_, next) => {
+        handler.read = (next) => {
             let data: Uint8Array = next().subarray();
 
             // copy memory for Uint16Array etc.
@@ -59,7 +59,7 @@ export const hArrayBufferView = initHandlers();
 export const hArrayBuffer: binjson.HandlerX<ArrayBuffer, Binary> = {
     subtag: SubTag.ArrayBuffer,
 
-    read: (_subtag, next) => {
+    read: (next) => {
         const {buffer, byteOffset, byteLength} = next().subarray();
         return buffer.slice(byteOffset, byteOffset + byteLength);
     },

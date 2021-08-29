@@ -33,7 +33,7 @@ export const hUndefined: binjson.Handler1<undefined> = {
 export const hDate: binjson.HandlerX<Date, number> = {
     subtag: SubTag.Date,
 
-    read: (_subtag, next) => new Date(next()),
+    read: (next) => new Date(next()),
 
     match: (value) => (value instanceof Date),
 
@@ -67,7 +67,7 @@ export const hNull: binjson.Handler1<null> = {
 export const hRegExp: binjson.HandlerX<RegExp, string> = {
     subtag: SubTag.RegExp,
 
-    read: (_subtag, next) => {
+    read: (next) => {
         const source = next();
         const flags = next();
         return new RegExp(source, flags);

@@ -23,7 +23,7 @@ describe(TITLE, () => {
     const myHandler: binjson.HandlerX<MyClass, number> = {
         subtag: murmur3(MyClass.name),
 
-        read: (_subtag, next) => new MyClass(next()),
+        read: (next) => new MyClass(next()),
 
         match: (value) => (value instanceof MyClass),
 

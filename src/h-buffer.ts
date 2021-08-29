@@ -13,7 +13,7 @@ import {Binary} from "./h-binary";
 export const hBuffer: binjson.HandlerX<Buffer, Binary> = {
     subtag: SubTag.Buffer,
 
-    read: (_subtag, next) => Buffer.from(next().subarray()),
+    read: (next) => Buffer.from(next().subarray()),
 
     match: value => Buffer.isBuffer(value),
 

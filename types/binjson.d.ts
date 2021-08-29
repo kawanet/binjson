@@ -51,7 +51,7 @@ export declare module binjson {
     interface HandlerX<T, P = never> {
         subtag: number;
 
-        read: (subtag: number, next: () => P) => T;
+        read: (next: () => P) => T;
 
         match: (value: any) => boolean;
 

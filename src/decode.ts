@@ -20,7 +20,7 @@ export function decode(driver: Driver, buf: ReadBuf): any {
             const subtag = buf.readI32() >>> 0;
             const handlerX = readRouterX(subtag);
             if (handlerX) {
-                return handlerX.read(subtag, next);
+                return handlerX.read(next);
             }
         }
     };
