@@ -70,7 +70,7 @@ const hNumberObject: WriteHandler1<number | Number> = {
  * hTwoByteString has better performance on long string.
  */
 
-const routeString: WriteRouter1 = (v: string) => ((v.length <= 10) ? hString : hWideString);
+const routeString: WriteRouter1 = (v: string) => ((v.length <= 53) ? hString : hWideString);
 
 const hStringObject: WriteHandler1<string | String> = {
     allowToJSON: true,
@@ -93,6 +93,7 @@ const routeType: WriteRouter1 = value => {
         case "string":
             return routeString(value);
         case "object":
+            if (Array.isArray(value)) return hArrayBegin;
             if (value === null) return hNull;
             // Binary is a wrapper for Uint8Array
             if (value instanceof Binary) return hBinary;
@@ -105,25 +106,25 @@ const routeType: WriteRouter1 = value => {
 };
 
 export const routeObject: WriteRouter1 = value => {
-    if ("object" === typeof value) {
-        let handler: WriteHandler1<any>;
+    if ("object" !== typeof value) return;
 
-        if (value === null) {
-            handler = hNull;
-        } else if (Array.isArray(value)) {
-            handler = hArrayBegin;
-        } else if (value instanceof Boolean) {
-            handler = hBooleanObject;
-        } else if (value instanceof Number) {
-            handler = hNumberObject;
-        } else if (value instanceof String) {
-            handler = hStringObject;
-        } else {
-            handler = hObjectBegin;
-        }
+    let handler: WriteHandler1<any>;
 
-        return handler;
+    if (value === null) {
+        handler = hNull;
+    } else if (Array.isArray(value)) {
+        handler = hArrayBegin;
+    } else if (value instanceof Boolean) {
+        handler = hBooleanObject;
+    } else if (value instanceof Number) {
+        handler = hNumberObject;
+    } else if (value instanceof String) {
+        handler = hStringObject;
+    } else {
+        handler = hObjectBegin;
     }
+
+    return handler;
 };
 
 export class WriteRoute {
