@@ -5,6 +5,7 @@
 .Thumbs
 ._*
 .idea/
+benchmark/*.js
 build/
 dist/
 node_modules

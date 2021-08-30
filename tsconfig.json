@@ -1,5 +1,6 @@
 {
   "include": [
+    "./benchmark",
     "./src",
     "./test",
     "./types"
