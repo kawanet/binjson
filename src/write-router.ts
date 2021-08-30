@@ -125,10 +125,8 @@ export const routeObject: WriteRouter1 = value => {
 const initDefault = (): WriteRoute => {
     const route = new WriteRoute(routeType);
 
-    route.add([
-        hArrayBuffer,
-        hArrayBufferView,
-    ]);
+    route.add(hArrayBuffer);
+    route.add(hArrayBufferView, ArrayBuffer.isView);
 
     return route;
 };

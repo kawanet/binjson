@@ -20,7 +20,17 @@ export class WriteRoute {
         //
     }
 
-    add(handler: Handler<any> | (Handler<any> | Handler<any>[])[]): void {
+    add(handler: Handler<any> | Handler<any>[], filter?: (value: any) => boolean): void {
+        if (filter) {
+            const subRoute = new WriteRoute();
+            subRoute.add(handler);
+            const r1 = subRoute.router1();
+            const rX = subRoute.routerX();
+            if (r1) this.wr1 = MERGE1(value => (filter(value) && r1(value)), this.wr1);
+            if (rX) this.wrX = MERGEX(value => (filter(value) && rX(value)), this.wrX);
+            return;
+        }
+
         if (Array.isArray(handler)) {
             return handler.slice().reverse().forEach(h => this.add(h));
         }
