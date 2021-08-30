@@ -34,10 +34,7 @@ export const hArrayBegin: binjson.Handler1<any[], any> = {
         buf.tag(Tag.kArrayBegin);
         buf.pos++;
 
-        let idx = 0;
-        for (let item of array) {
-            next(item, idx++, array) || hNull.write(buf, null, next);
-        }
+        array.forEach((item, idx) => (next(item, idx) || hNull.write(buf, null, next)));
 
         hArrayEnd.write(buf, null, next);
     }

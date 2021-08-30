@@ -43,7 +43,7 @@ export declare module binjson {
 
         match?: (value: any) => boolean;
 
-        write: (buf: WriteBuf, value: T, next: (value: P, key?: number | string, parent?: any) => boolean) => void;
+        write: (buf: WriteBuf, value: T, next: (value: P, key?: number | string) => boolean) => void;
 
         allowToJSON?: boolean;
     }

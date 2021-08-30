@@ -38,7 +38,7 @@ export const hObjectBegin: binjson.Handler1<object, any> = {
 
         for (let key in value) {
             if (value.hasOwnProperty(key)) {
-                if (next(value[key], key, value)) {
+                if (next(value[key], key)) {
                     if (!next(key)) {
                         hUndefined.write(buf, undefined, next);
                     }

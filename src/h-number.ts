@@ -5,7 +5,7 @@
 import type {binjson} from "../types/binjson";
 import {Tag} from "./enum";
 
-const hNumber0tag: number[] = new Array(10);
+const hNumber0tag: number[] = [];
 for (let i = 0; i < 10; i++) hNumber0tag[i] = Tag.kNumber0 + i;
 
 /**
