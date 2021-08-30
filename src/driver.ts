@@ -3,8 +3,10 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {defaultReadRoute, ReadRoute, ReadRouter1, ReadRouterX} from "./read-route";
-import {defaultWriteRoute, WriteRoute, WriteRouter1, WriteRouterX} from "./write-route";
+import {ReadRoute, ReadRouter1, ReadRouterX} from "./read-route";
+import {defaultReadRoute} from "./read-router";
+import {WriteRoute, WriteRouter1, WriteRouterX} from "./write-route";
+import {defaultWriteRoute} from "./write-router";
 
 export class Driver {
     readRouter1: ReadRouter1;

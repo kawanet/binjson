@@ -4,7 +4,7 @@
 
 import type {binjson} from "../types/binjson";
 import {BinJSON} from "./binjson";
-import {handlers} from "./read-route";
+import {handlers} from "./read-router";
 
 class BufJSON extends BinJSON implements binjson.IBinJSON<Buffer> {
     extend(options: binjson.Options): binjson.IBinJSON<Buffer> {

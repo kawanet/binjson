@@ -6,7 +6,7 @@ import type {binjson} from "../types/binjson";
 import {WriteBuf} from "./write-buf";
 import {Driver} from "./driver";
 import {Tag} from "./enum";
-import {routeObject} from "./write-route";
+import {routeObject} from "./write-router";
 
 export function encode(driver: Driver, value: any, buf: WriteBuf): Uint8Array {
     const {writeRouter1, writeRouterX} = driver;

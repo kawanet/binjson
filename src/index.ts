@@ -4,7 +4,7 @@
 
 import * as B from "./bufjson";
 
-export {handlers} from "./read-route";
+export {handlers} from "./read-router";
 export {binJSON} from "./binjson";
 
 export const bufJSON = B && B.bufJSON;
