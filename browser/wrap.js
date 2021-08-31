@@ -1,24 +1,24 @@
-var binjson = (function(init, main) {
-  var mod = {require: require};
-  var def = {};
-  var pre = {};
-  if ("undefined" != typeof exports) pre[main] = exports;
-  define.amd = true;
+var binjson = (function(main, exports, init) {
+  var loaded = {require: require}; // loaded modules
+  var defined = {}; // defined modules
+  var bridge = {};
+  bridge[main] = exports; // CommonJS bridge
+  define.amd = {}; // AMD signature
   init(define);
-  return require(main);
+  return require(main); // load main module
 
   function require(name) {
-    return mod[name] || (mod[name] = def[name]());
+    return loaded[name] || (loaded[name] = defined[name]());
   }
 
   function define(name, deps, fn) {
-    def[name] = function() {
-      var exports = mod.exports = pre[name] || {};
-      var module = mod.module = {exports: exports};
+    defined[name] = function() {
+      var exports = loaded.exports = bridge[name] || {};
+      var module = loaded.module = {exports: exports};
       fn.apply(null, deps.map(require));
       return module.exports;
     }
   }
-})(function(define) {
+})("index", ("undefined" != typeof exports) && exports, function(define) {
   // AMD
-}, "index"); // END
+}); // END
