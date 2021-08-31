@@ -6,7 +6,7 @@ import type {binjson} from "../types/binjson";
 import {WriteBuf} from "./write-buf";
 import {Driver} from "./driver";
 import {Tag} from "./enum";
-import {routeObject} from "./write-router";
+import {objectRouter} from "./write-router";
 
 export function encode(driver: Driver, value: any, buf: WriteBuf): Uint8Array {
     const {writeRouter1, writeRouterX} = driver;
@@ -27,7 +27,7 @@ export function encode(driver: Driver, value: any, buf: WriteBuf): Uint8Array {
             if (writeRouterX) handlerX = writeRouterX(value);
 
             // find another handler1 for object
-            if (!handlerX) handler1 = routeObject(value);
+            if (!handlerX) handler1 = objectRouter(value);
 
             // fail if both handler1/X are not found for object (this should never happen)
             if (!handler1 && !handlerX) return false;

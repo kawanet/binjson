@@ -18,7 +18,7 @@ import {WriteRoute} from "./write-route";
 
 type Handler1<T> = binjson.Handler1<T, any>;
 type WriteHandler1<T> = Pick<Handler1<T>, "allowToJSON" | "match" | "write">;
-type WriteRouter1 = (value: any) => WriteHandler1<any>;
+type WriteRouter1<T> = (value: T) => WriteHandler1<T>;
 
 const {hArrayBegin} = A;
 const {hFalse, hTrue} = B;
@@ -34,14 +34,14 @@ const {hBinary} = X;
  * boolean
  */
 
-const routeBoolean: WriteRouter1 = (v: boolean) => (v ? hTrue : hFalse);
+const booleanRouter: WriteRouter1<boolean> = v => (v ? hTrue : hFalse);
 
 const hBooleanObject: WriteHandler1<boolean | Boolean> = {
     allowToJSON: true,
 
     write: (buf, value, next) => {
         const bool = Boolean(+value);
-        return routeBoolean(bool).write(buf, bool, next);
+        return booleanRouter(bool).write(buf, bool, next);
     },
 };
 
@@ -49,14 +49,14 @@ const hBooleanObject: WriteHandler1<boolean | Boolean> = {
  * number
  */
 
-const routeNumber: WriteRouter1 = (v: number) => ((v | 0) == v) ? ((0 <= v && v <= 9) ? hNumber0 : hInt32) : (isFinite(v) ? hDouble : hNull);
+const numberRouter: WriteRouter1<number> = v => ((v | 0) == v) ? ((0 <= v && v <= 9) ? hNumber0 : hInt32) : (isFinite(v) ? hDouble : hNull);
 
 const hNumberObject: WriteHandler1<number | Number> = {
     allowToJSON: true,
 
     write: (buf, value, next) => {
         const num = Number(value);
-        return routeNumber(num).write(buf, num, next);
+        return numberRouter(num).write(buf, num, next);
     },
 };
 
@@ -65,65 +65,55 @@ const hNumberObject: WriteHandler1<number | Number> = {
  * hTwoByteString has better performance on long string.
  */
 
-const routeString: WriteRouter1 = (v: string) => ((v.length <= 53) ? hString : hWideString);
+const stringRouter: WriteRouter1<string> = v => ((v.length <= 53) ? hString : hWideString);
 
 const hStringObject: WriteHandler1<string | String> = {
     allowToJSON: true,
 
     write: (buf, value, next) => {
         const str = String(value);
-        return routeString(str).write(buf, str, next)
+        return stringRouter(str).write(buf, str, next)
     },
 };
 
 /**
- * default router for `encode()`.
- * add missing handlers via `handler` option.
+ * the typeofRouter is executed before HandlerX-s enabled.
+ * order: extended Handler1 -> this typeofRouter -> extended handlerX -> objectRouter.
  */
 
-const routeType: WriteRouter1 = value => {
-    switch (typeof value) {
-        case "number":
-            return routeNumber(value);
-        case "string":
-            return routeString(value);
-        case "object":
-            if (Array.isArray(value)) return hArrayBegin;
-            if (value === null) return hNull;
-            // Binary is a wrapper for Uint8Array
-            if (value instanceof Binary) return hBinary;
-            break;
-        case "boolean":
-            return routeBoolean(value);
-        case "bigint":
-            return hBigInt;
-    }
+const typeofRouter: WriteRouter1<any> = value => {
+    if ("string" === typeof value) return stringRouter(value);
+    if ("number" === typeof value) return numberRouter(value);
+    if ("object" === typeof value) return eagerObjectRouter(value);
+    if ("boolean" === typeof value) return booleanRouter(value);
+    if ("bigint" === typeof value) return hBigInt;
 };
 
-export const routeObject: WriteRouter1 = value => {
+const eagerObjectRouter: WriteRouter1<object> = value => {
+    if (value === null) return hNull;
+    if (value.constructor === Object) return hObjectBegin;
+    if (value.constructor === Array) return hArrayBegin;
+    if (value.constructor === Binary) return hBinary;
+};
+
+/**
+ * the objectRouter is executed after HandleX-s enabled.
+ * order: extended Handler1 -> typeofRouter -> extended handlerX -> this objectRouter.
+ */
+
+export const objectRouter: WriteRouter1<any> = value => {
     if ("object" !== typeof value) return;
-
-    let handler: WriteHandler1<any>;
-
-    if (value === null) {
-        handler = hNull;
-    } else if (Array.isArray(value)) {
-        handler = hArrayBegin;
-    } else if (value instanceof Boolean) {
-        handler = hBooleanObject;
-    } else if (value instanceof Number) {
-        handler = hNumberObject;
-    } else if (value instanceof String) {
-        handler = hStringObject;
-    } else {
-        handler = hObjectBegin;
-    }
-
-    return handler;
+    if (value === null) return hNull;
+    if (Array.isArray(value)) return hArrayBegin;
+    if (Binary.isBinary(value)) return hBinary;
+    if (value instanceof Boolean) return hBooleanObject;
+    if (value instanceof Number) return hNumberObject;
+    if (value instanceof String) return hStringObject;
+    return hObjectBegin;
 };
 
 const initDefault = (): WriteRoute => {
-    const route = new WriteRoute(routeType);
+    const route = new WriteRoute(typeofRouter);
 
     route.add(hArrayBuffer);
     route.add(hArrayBufferView, ArrayBuffer.isView);
