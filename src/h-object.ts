@@ -12,7 +12,7 @@ import {hUndefined} from "./h-misc";
 
 export const hObjectBegin: binjson.Handler1<object, any> = {
     tag: Tag.kObjectBegin,
-    allowToJSON: true,
+    native: true,
 
     read: (buf, _, next) => {
         buf.pos++;
@@ -36,7 +36,7 @@ export const hObjectBegin: binjson.Handler1<object, any> = {
         buf.tag(Tag.kObjectBegin);
         buf.pos++;
 
-        for (let key in value) {
+        for (const key in value) {
             if (value.hasOwnProperty(key)) {
                 if (next(value[key], key)) {
                     if (!next(key)) {

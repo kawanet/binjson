@@ -6,7 +6,7 @@ import type {binjson} from "../types/binjson";
 
 type Handler<T> = binjson.Handler<T>;
 type Handler1<T> = binjson.Handler1<T, any>;
-type WriteHandler1<T> = Pick<Handler1<T>, "allowToJSON" | "match" | "write">;
+type WriteHandler1<T> = Pick<Handler1<T>, "match" | "native" | "write">;
 type HandlerX<T> = binjson.HandlerX<T, any>;
 
 export type WriteRouter1 = (value: any) => WriteHandler1<any>;

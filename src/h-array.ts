@@ -12,7 +12,7 @@ import {hNull} from "./h-misc";
 
 export const hArrayBegin: binjson.Handler1<any[], any> = {
     tag: Tag.kArrayBegin,
-    allowToJSON: true,
+    native: true,
     match: (value) => Array.isArray(value),
 
     read: (buf, _, next) => {

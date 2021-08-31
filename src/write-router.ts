@@ -17,7 +17,7 @@ import {Binary} from "./h-binary";
 import {WriteRoute} from "./write-route";
 
 type Handler1<T> = binjson.Handler1<T, any>;
-type WriteHandler1<T> = Pick<Handler1<T>, "allowToJSON" | "match" | "write">;
+type WriteHandler1<T> = Pick<Handler1<T>, "match" | "native" | "write">;
 type WriteRouter1<T> = (value: T) => WriteHandler1<T>;
 
 const {hArrayBegin} = A;
@@ -37,7 +37,7 @@ const {hBinary} = X;
 const booleanRouter: WriteRouter1<boolean> = v => (v ? hTrue : hFalse);
 
 const hBooleanObject: WriteHandler1<boolean | Boolean> = {
-    allowToJSON: true,
+    native: true,
 
     write: (buf, value, next) => {
         const bool = Boolean(+value);
@@ -52,7 +52,7 @@ const hBooleanObject: WriteHandler1<boolean | Boolean> = {
 const numberRouter: WriteRouter1<number> = v => ((v | 0) == v) ? ((0 <= v && v <= 9) ? hNumber0 : hInt32) : (isFinite(v) ? hDouble : hNull);
 
 const hNumberObject: WriteHandler1<number | Number> = {
-    allowToJSON: true,
+    native: true,
 
     write: (buf, value, next) => {
         const num = Number(value);
@@ -68,7 +68,7 @@ const hNumberObject: WriteHandler1<number | Number> = {
 const stringRouter: WriteRouter1<string> = v => ((v.length <= 53) ? hString : hWideString);
 
 const hStringObject: WriteHandler1<string | String> = {
-    allowToJSON: true,
+    native: true,
 
     write: (buf, value, next) => {
         const str = String(value);

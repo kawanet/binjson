@@ -45,7 +45,8 @@ export declare module binjson {
 
         write: (buf: WriteBuf, value: T, next: (value: P, key?: number | string) => boolean) => void;
 
-        allowToJSON?: boolean;
+        // set true for native object handlers which allow nested structure and toJSON method.
+        native?: boolean;
     }
 
     interface HandlerX<T, P = never> {

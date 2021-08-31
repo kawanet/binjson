@@ -19,8 +19,8 @@ describe(TITLE, () => {
         bar.foo = foo;
         foo.bar = bar;
 
-        assert.throws(() => JSON.stringify(foo));
-        assert.throws(() => binJSON.encode(foo));
+        assert.throws(() => JSON.stringify(foo), /circular/i);
+        assert.throws(() => binJSON.encode(foo), /circular/i);
     });
 
     it("Array", () => {
@@ -29,8 +29,8 @@ describe(TITLE, () => {
         foo.push(bar);
         bar.push(foo);
 
-        assert.throws(() => JSON.stringify(foo));
-        assert.throws(() => binJSON.encode(foo));
+        assert.throws(() => JSON.stringify(foo), /circular/i);
+        assert.throws(() => binJSON.encode(foo), /circular/i);
     });
 
     it("mixture", () => {
@@ -39,7 +39,7 @@ describe(TITLE, () => {
         foo.buz = buz;
         buz.push(foo);
 
-        assert.throws(() => JSON.stringify(foo));
-        assert.throws(() => binJSON.encode(foo));
+        assert.throws(() => JSON.stringify(foo), /circular/i);
+        assert.throws(() => binJSON.encode(foo), /circular/i);
     });
 });
