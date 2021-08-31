@@ -47,10 +47,10 @@ export const hString: binjson.Handler1<string> = {
             buf.pos += 1 + length;
         } else if (length < E.str16max) {
             buf.tag(Tag.kString16);
-            buf.writeData16(length, (array, offset) => writeString(array, offset, value));
+            buf.writeData16(length, (data, offset) => writeString(data, offset, value));
         } else {
             buf.tag(Tag.kString32);
-            buf.writeData32(length, (array, offset) => writeString(array, offset, value));
+            buf.writeData32(length, (data, offset) => writeString(data, offset, value));
         }
     },
 };
@@ -65,41 +65,42 @@ const readString = (buffer: Uint8Array, offset: number, length: number): string 
 
     let index = offset | 0;
     const end = offset + length;
-    let string = '';
-    let chr = 0;
+    let string = "";
 
     while (index < end) {
-        chr = buffer[index++];
-        if (chr < 128) {
-            string += String.fromCharCode(chr);
-        } else {
-            if ((chr & 0xE0) === 0xC0) {
-                // 2 bytes
-                chr = (chr & 0x1F) << 6 |
-                    (buffer[index++] & 0x3F);
+        const chunk: number[] = [];
+        const cend = Math.min(index + 256, end);
 
-            } else if ((chr & 0xF0) === 0xE0) {
-                // 3 bytes
-                chr = (chr & 0x0F) << 12 |
+        while (index < cend) {
+            const chr = buffer[index++];
+
+            if (chr < 128) { // 1 byte
+                chunk.push(chr);
+            } else if ((chr & 0xE0) === 0xC0) { // 2 bytes
+                chunk.push((chr & 0x1F) << 6 |
+                    (buffer[index++] & 0x3F));
+
+            } else if ((chr & 0xF0) === 0xE0) { // 3 bytes
+                chunk.push((chr & 0x0F) << 12 |
                     (buffer[index++] & 0x3F) << 6 |
-                    (buffer[index++] & 0x3F);
+                    (buffer[index++] & 0x3F));
 
-            } else if ((chr & 0xF8) === 0xF0) {
-                // 4 bytes
-                chr = (chr & 0x07) << 18 |
+            } else if ((chr & 0xF8) === 0xF0) { // 4 bytes
+                let code = (chr & 0x07) << 18 |
                     (buffer[index++] & 0x3F) << 12 |
                     (buffer[index++] & 0x3F) << 6 |
                     (buffer[index++] & 0x3F);
 
-                if (chr >= 0x010000) {
-                    // A surrogate pair
-                    chr -= 0x010000;
-                    string += String.fromCharCode((chr >>> 10) + 0xD800, (chr & 0x3FF) + 0xDC00);
-                    continue;
+                if (code < 0x010000) {
+                    chunk.push(code);
+                } else { // surrogate pair
+                    code -= 0x010000;
+                    chunk.push((code >>> 10) + 0xD800, (code & 0x3FF) + 0xDC00);
                 }
             }
-            string += String.fromCharCode(chr);
         }
+
+        string += String.fromCharCode.apply(String, chunk);
     }
 
     return string;

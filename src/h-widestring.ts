@@ -27,10 +27,10 @@ export const hWideString: binjson.Handler1<string> = {
         buf = buf.prepare(5 + length);
         if (length < 0x10000) {
             buf.tag(Tag.kWideString16);
-            buf.writeView16(length, (array, offset) => writeString(array, offset, value));
+            buf.writeView16(length, (view, offset) => writeString(view, offset, value));
         } else {
             buf.tag(Tag.kWideString32);
-            buf.writeView32(length, (array, offset) => writeString(array, offset, value));
+            buf.writeView32(length, (view, offset) => writeString(view, offset, value));
         }
     },
 };

@@ -72,14 +72,12 @@ export class WriteBuf implements binjson.WriteBuf {
     }
 
     writeI32(value: number): void {
-        const {pos} = this;
-        this.view.setInt32(pos + 1, value);
+        this.view.setInt32(this.pos + 1, value);
         this.pos += 5;
     }
 
     writeF64(value: number): void {
-        const {pos} = this;
-        this.view.setFloat64(pos + 1, value);
+        this.view.setFloat64(this.pos + 1, value);
         this.pos += 9;
     }
 

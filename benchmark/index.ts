@@ -8,7 +8,7 @@
  */
 
 import {strict as assert} from "assert";
-import {binJSON} from "../";
+import {binjson, binJSON as _binJSON, handlers} from "../";
 import * as JSONB from "json-buffer";
 import * as msglite from "msgpack-lite";
 import * as msgpack from "@msgpack/msgpack";
@@ -26,6 +26,12 @@ interface DataSet {
 
 const SLEEP = (msec: number) => new Promise(resolve => setTimeout(resolve, msec));
 const SIZE = (data: any) => Buffer.from(JSON.stringify(data)).length;
+
+const handler: binjson.Handler<any>[] = [];
+const {UTF8, UTF16} = process.env;
+if (UTF8) handler.push(handlers.UTF8);
+if (UTF16) handler.push(handlers.UTF16);
+const binJSON = _binJSON.extend({handler});
 
 async function CLI(argv: string[]) {
     const suite = new Suite();
