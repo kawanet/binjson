@@ -46,7 +46,7 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
         const array: number[] = [];
         for (let i = 0; i < 256; i++) array.push(i);
         for (let j = 256; j < Number.MAX_SAFE_INTEGER; j *= 2) array.push(j);
-        stringifyTest(`number (${SIZE(array)})`, array);
+        stringifyTest(`number ${SIZE(array)}`, array);
     }
 
     {
@@ -56,7 +56,7 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
                 array.push(String.fromCharCode(i + 48).repeat(length));
             }
         }
-        stringifyTest(`short OneByteString (${SIZE(array)})`, array);
+        stringifyTest(`short OneByteString ${SIZE(array)}`, array);
     }
 
     {
@@ -67,7 +67,7 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
                 array.push(String.fromCharCode(i + 0xFF10).repeat(repeat));
             }
         }
-        stringifyTest(`short TwoByteString (${SIZE(array)})`, array);
+        stringifyTest(`short TwoByteString ${SIZE(array)}`, array);
     }
 
     {
@@ -75,7 +75,7 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
         for (let i = 0; i < 10; i++) { // 256 to 128K
             array.push(String.fromCharCode(i + 48).repeat((2 ** i) * 256));
         }
-        stringifyTest(`long OneByteString (${SIZE(array)})`, array);
+        stringifyTest(`long OneByteString ${SIZE(array)}`, array);
     }
 
     {
@@ -83,14 +83,14 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
         for (let i = 0; i < 10; i++) {
             array.push(String.fromCharCode(i + 0xFF10).repeat((2 ** i) * 256));
         }
-        stringifyTest(`long TwoByteString (${SIZE(array)})`, array);
+        stringifyTest(`long TwoByteString ${SIZE(array)}`, array);
     }
 
     {
         const nest = (a: any[]) => [a, a];
         let array: any[] = [];
         for (let i = 0; i < 10; i++) array = nest(array);
-        stringifyTest(`nest Array (${SIZE(array)})`, array);
+        stringifyTest(`nest Array ${SIZE(array)}`, array);
     }
 
     {
@@ -100,10 +100,10 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
         stringifyTest(`nest Object (${SIZE(object)})`, object);
     }
 
-    binaryTest("Buffer (1KB)", 1000);
-    binaryTest("Buffer (10KB)", 10000);
-    binaryTest("Buffer (100KB)", 100000);
-    binaryTest("Buffer (1MB)", 1000000);
+    binaryTest("Buffer 1KB", 1000);
+    binaryTest("Buffer 10KB", 10000);
+    binaryTest("Buffer 100KB", 100000);
+    binaryTest("Buffer 1MB", 1000000);
 
     function stringifyTest(title: string, source: any) {
 
