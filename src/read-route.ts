@@ -14,6 +14,11 @@ export type ReadRouterX = (subtag: number) => binjson.HandlerX<any, any>;
 const isHandlerX = (handler: any): handler is HandlerX => !!handler?.subtag;
 const isHandler1 = (handler: any): handler is Handler1 => !!handler?.tag;
 
+export interface ReadDriver {
+    readRouter1?: ReadRouter1;
+    readRouterX?: ReadRouterX;
+}
+
 export class ReadRoute {
     private idx1: Handler1[] = [];
     private idxX: { [key: string]: HandlerX } = {};

@@ -3,12 +3,12 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {ReadRoute, ReadRouter1, ReadRouterX} from "./read-route";
+import {ReadDriver, ReadRoute, ReadRouter1, ReadRouterX} from "./read-route";
 import {defaultReadRoute} from "./read-router";
-import {WriteRoute, WriteRouter1, WriteRouterX} from "./write-route";
+import {WriteDriver, WriteRoute, WriteRouter1, WriteRouterX} from "./write-route";
 import {defaultWriteRoute} from "./write-router";
 
-export class Driver {
+export class Driver implements ReadDriver, WriteDriver {
     readRouter1: ReadRouter1;
     readRouterX: ReadRouterX;
     writeRouter1: WriteRouter1;
@@ -25,7 +25,7 @@ export class Driver {
 const defaultWrite = defaultWriteRoute;
 const defaultRead = defaultReadRoute;
 
-function updateReadRouter(target: Driver, base: Driver, options: binjson.Options): void {
+function updateReadRouter(target: ReadDriver, base: ReadDriver, options: binjson.Options): void {
     let router1 = base?.readRouter1 || defaultRead.router1();
     let routerX = base?.readRouterX || defaultRead.routerX();
 
@@ -40,7 +40,7 @@ function updateReadRouter(target: Driver, base: Driver, options: binjson.Options
     target.readRouterX = routerX;
 }
 
-function updateWriteRouter(target: Driver, base: Driver, options: binjson.Options): void {
+function updateWriteRouter(target: WriteDriver, base: WriteDriver, options: binjson.Options): void {
     let router1 = base?.writeRouter1 || defaultWrite.router1();
     let routerX = base?.writeRouterX || defaultWrite.routerX();
 

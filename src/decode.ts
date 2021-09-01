@@ -4,9 +4,9 @@
 
 import {Tag} from "./enum";
 import {ReadBuf} from "./read-buf";
-import {Driver} from "./driver";
+import {ReadDriver} from "./read-route";
 
-export function decode(driver: Driver, buf: ReadBuf): any {
+export function decode(driver: ReadDriver, buf: ReadBuf): any {
     const {readRouter1, readRouterX} = driver;
 
     const next = (): any => {

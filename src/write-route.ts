@@ -15,9 +15,20 @@ export type WriteRouterX = (value: any) => HandlerX<any>;
 const isHandler1 = (handler: any): handler is Handler1<any> => !!handler?.tag;
 const isHandlerX = (handler: any): handler is HandlerX<any> => !!handler?.subtag;
 
+export interface WriteDriver {
+    writeRouter1?: WriteRouter1;
+    writeRouterX?: WriteRouterX;
+}
+
 export class WriteRoute {
-    constructor(private wr1?: WriteRouter1, private wrX?: WriteRouterX) {
-        //
+    private wr1?: WriteRouter1;
+    private wrX?: WriteRouterX;
+
+    constructor(driver?: WriteDriver) {
+        if (driver) {
+            this.wr1 = driver.writeRouter1;
+            this.wrX = driver.writeRouterX;
+        }
     }
 
     add(handler: Handler<any> | Handler<any>[], filter?: (value: any) => boolean): void {
