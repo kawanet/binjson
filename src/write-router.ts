@@ -13,7 +13,6 @@ import * as S from "./h-string";
 import * as T from "./h-typedarray";
 import * as W from "./h-widestring";
 import * as X from "./h-binary";
-import {Binary} from "./h-binary";
 import {WriteDriver} from "./write-driver";
 
 type Handler1<T> = binjson.Handler1<T, any>;
@@ -28,7 +27,7 @@ const {hObjectBegin} = O;
 const {hString} = S;
 const {hArrayBuffer, hArrayBufferView} = T;
 const {hWideString} = W;
-const {hBinary} = X;
+const {Binary, hBinary} = X;
 
 /**
  * boolean
@@ -112,10 +111,17 @@ export const objectRouter: WriteRouter1<any> = value => {
     return hObjectBegin;
 };
 
+/**
+ * default router for `encode()`.
+ */
+
 const initDefault = (): WriteDriver => {
     const driver = new WriteDriver({router1: typeofRouter});
 
+    // ArrayBuffer
     driver.add(hArrayBuffer);
+
+    // TypedArray
     driver.add(hArrayBufferView, ArrayBuffer.isView);
 
     return driver;

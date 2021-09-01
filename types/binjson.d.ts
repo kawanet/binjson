@@ -5,14 +5,14 @@
 export const {bufJSON, binJSON, handlers} = binjson;
 
 export declare module binjson {
-    const bufJSON: IBinJSON<Buffer>;
+    const bufJSON: BinJSON<Buffer>;
 
-    const binJSON: IBinJSON<Uint8Array>;
+    const binJSON: BinJSON<Uint8Array>;
 
     const handlers: Handlers;
 
-    interface IBinJSON<D> {
-        extend: (options: Options) => IBinJSON<D>;
+    interface BinJSON<D> {
+        extend: (options: Options) => BinJSON<D>;
         decode: <V = any>(data: D) => V;
         encode: (value: any) => D;
     }

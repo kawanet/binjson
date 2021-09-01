@@ -49,7 +49,7 @@ describe(TITLE, () => {
         }
     });
 
-    function test(tag: string, src: string, byte: number, repeat: number, myJSON?: binjson.IBinJSON<any>): void {
+    function test(tag: string, src: string, byte: number, repeat: number, myJSON?: binjson.BinJSON<any>): void {
         if (!myJSON) myJSON = binJSON; // default behavior
         let value = "";
         while (value.length < repeat) value += src;
