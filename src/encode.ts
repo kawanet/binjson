@@ -4,29 +4,31 @@
 
 import type {binjson} from "../types/binjson";
 import {WriteBuf} from "./write-buf";
-import {WriteDriver} from "./write-route";
+import {IWriteDriver} from "./write-driver";
 import {Tag} from "./enum";
 import {objectRouter} from "./write-router";
 
-export function encode(driver: WriteDriver, value: any, buf: WriteBuf): Uint8Array {
-    const {writeRouter1, writeRouterX} = driver;
+export function encode(driver: IWriteDriver, value: any, buf: WriteBuf): Uint8Array {
+    const {router1, routerX} = driver;
     const start = buf;
     const stack: object[] = [];
 
     const next = (value: any, key?: string): boolean => {
         // pickup a valid handler for the value
-        let handler1 = writeRouter1(value);
+        let handler1 = router1(value);
         let handlerX: binjson.HandlerX<any, any>;
 
         if (!handler1) {
             // find handlerX for object
-            if (writeRouterX) handlerX = writeRouterX(value);
+            if (routerX) handlerX = routerX(value);
 
             // find another handler1 for object
-            if (!handlerX) handler1 = objectRouter(value);
+            if (!handlerX) {
+                handler1 = objectRouter(value);
 
-            // fail if both handler1/X are not found for object
-            if (!handler1 && !handlerX) return false;
+                // fail if both handler1/X are not found for object
+                if (!handler1) return false;
+            }
         }
 
         const native = (handler1 && handler1.native);

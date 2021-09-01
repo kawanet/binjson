@@ -8,7 +8,10 @@ import {handlers} from "./read-router";
 
 class BufJSON extends BinJSON implements binjson.IBinJSON<Buffer> {
     extend(options: binjson.Options): binjson.IBinJSON<Buffer> {
-        return new BufJSON(options, this.driver);
+        const child = new BufJSON(this);
+        child.reader.add(options.handler);
+        child.writer.add(options.handler);
+        return child;
     }
 
     /**
@@ -25,4 +28,4 @@ class BufJSON extends BinJSON implements binjson.IBinJSON<Buffer> {
  * Node.js Buffer version of binJSON
  */
 
-export const bufJSON: binjson.IBinJSON<Buffer> = new BufJSON({handler: handlers.Buffer});
+export const bufJSON: binjson.IBinJSON<Buffer> = new BufJSON().extend({handler: handlers.Buffer});

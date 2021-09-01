@@ -4,21 +4,21 @@
 
 import {Tag} from "./enum";
 import {ReadBuf} from "./read-buf";
-import {ReadDriver} from "./read-route";
+import {IReadDriver} from "./read-driver";
 
-export function decode(driver: ReadDriver, buf: ReadBuf): any {
-    const {readRouter1, readRouterX} = driver;
+export function decode(driver: IReadDriver, buf: ReadBuf): any {
+    const {router1, routerX} = driver;
 
     const next = (): any => {
         const tag = buf.tag();
-        const handler = readRouter1(tag);
-        if (handler) {
-            return handler.read(buf, tag, next);
+        const handler1 = router1(tag);
+        if (handler1) {
+            return handler1.read(buf, tag, next);
         }
 
         if (tag === Tag.kExtension) {
             const subtag = buf.readI32() >>> 0;
-            const handlerX = readRouterX(subtag);
+            const handlerX = routerX(subtag);
             if (handlerX) {
                 return handlerX.read(next);
             }

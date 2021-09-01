@@ -13,7 +13,7 @@ import {hArrayBuffer, hArrayBufferView} from "./h-typedarray";
 import {hBigInt, hDouble, hInt32, hNumber0} from "./h-number";
 import {hFalse, hTrue} from "./h-boolean";
 import {hObjectBegin, hObjectEnd} from "./h-object";
-import {ReadRoute} from "./read-route";
+import {ReadDriver} from "./read-driver";
 
 export const handlers: binjson.Handlers = {
     Buffer: hBuffer,
@@ -29,9 +29,9 @@ export const handlers: binjson.Handlers = {
  */
 
 const initDefault = () => {
-    const route = new ReadRoute();
+    const driver = new ReadDriver();
 
-    route.add([
+    driver.add([
         hArrayBegin,
         hArrayBuffer,
         hArrayBufferView,
@@ -54,7 +54,7 @@ const initDefault = () => {
         hWideString,
     ]);
 
-    return route;
+    return driver;
 };
 
-export const defaultReadRoute = initDefault();
+export const defaultReader = initDefault();

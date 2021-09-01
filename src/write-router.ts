@@ -14,7 +14,7 @@ import * as T from "./h-typedarray";
 import * as W from "./h-widestring";
 import * as X from "./h-binary";
 import {Binary} from "./h-binary";
-import {WriteRoute} from "./write-route";
+import {WriteDriver} from "./write-driver";
 
 type Handler1<T> = binjson.Handler1<T, any>;
 type WriteHandler1<T> = Pick<Handler1<T>, "match" | "native" | "write">;
@@ -112,13 +112,13 @@ export const objectRouter: WriteRouter1<any> = value => {
     return hObjectBegin;
 };
 
-const initDefault = (): WriteRoute => {
-    const route = new WriteRoute({writeRouter1: typeofRouter});
+const initDefault = (): WriteDriver => {
+    const driver = new WriteDriver({router1: typeofRouter});
 
-    route.add(hArrayBuffer);
-    route.add(hArrayBufferView, ArrayBuffer.isView);
+    driver.add(hArrayBuffer);
+    driver.add(hArrayBufferView, ArrayBuffer.isView);
 
-    return route;
+    return driver;
 };
 
-export const defaultWriteRoute = initDefault();
+export const defaultWriter = initDefault();

@@ -16,24 +16,27 @@ type RouterXIndex = { [key: string]: HandlerX };
 const isHandlerX = (handler: any): handler is HandlerX => !!handler?.subtag;
 const isHandler1 = (handler: any): handler is Handler1 => !!handler?.tag;
 
-export interface ReadDriver {
-    readRouter1?: ReadRouter1;
-    readRouterX?: ReadRouterX;
+export interface IReadDriver {
+    router1?: ReadRouter1;
+    routerX?: ReadRouterX;
 }
 
-export class ReadRoute implements ReadDriver {
-    private idx1: Router1Index;
-    private idxX: RouterXIndex;
-    readRouter1?: ReadRouter1;
-    readRouterX?: ReadRouterX;
+export class ReadDriver implements IReadDriver {
+    router1?: ReadRouter1;
+    routerX?: ReadRouterX;
+    private i1: Router1Index;
+    private iX: RouterXIndex;
 
-    constructor(base?: ReadDriver) {
+    constructor(base?: IReadDriver) {
+        const index1: Router1Index = this.i1 = [];
+        const indexX: RouterXIndex = this.iX = {};
+        this.router1 = GEN1(index1, base?.router1);
+        this.routerX = GENX(indexX, base?.routerX);
+    }
 
-        const index1: Router1Index = this.idx1 = [];
-        const indexX: RouterXIndex = this.idxX = {};
-
-        this.readRouter1 = GEN1(index1, base?.readRouter1);
-        this.readRouterX = GENX(indexX, base?.readRouterX);
+    export(target: IReadDriver): void {
+        target.router1 = this.router1;
+        target.routerX = this.routerX;
     }
 
     add(handler: Handler | (Handler | Handler[])[]): void {
@@ -54,7 +57,7 @@ export class ReadRoute implements ReadDriver {
         if (Array.isArray(tag)) {
             tag.forEach(t => this.add1(t, handler));
         } else if (tag != null) {
-            this.idx1[tag & 255] = handler;
+            this.i1[tag & 255] = handler;
         }
     }
 
@@ -62,7 +65,7 @@ export class ReadRoute implements ReadDriver {
         if (Array.isArray(subtag)) {
             subtag.forEach(t => this.addX(t, handler));
         } else if (subtag != null) {
-            this.idxX[subtag >>> 0] = handler;
+            this.iX[subtag >>> 0] = handler;
         }
     }
 }

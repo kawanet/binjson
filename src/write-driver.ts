@@ -15,30 +15,34 @@ export type WriteRouterX = (value: any) => HandlerX<any>;
 const isHandler1 = (handler: any): handler is Handler1<any> => !!handler?.tag;
 const isHandlerX = (handler: any): handler is HandlerX<any> => !!handler?.subtag;
 
-export interface WriteDriver {
-    writeRouter1?: WriteRouter1;
-    writeRouterX?: WriteRouterX;
+export interface IWriteDriver {
+    router1?: WriteRouter1;
+    routerX?: WriteRouterX;
 }
 
-export class WriteRoute implements WriteDriver {
-    writeRouter1?: WriteRouter1;
-    writeRouterX?: WriteRouterX;
+export class WriteDriver implements IWriteDriver {
+    router1?: WriteRouter1;
+    routerX?: WriteRouterX;
 
-    constructor(driver?: WriteDriver) {
+    constructor(driver?: IWriteDriver) {
         if (driver) {
-            this.writeRouter1 = driver.writeRouter1;
-            this.writeRouterX = driver.writeRouterX;
+            this.export.call(driver, this);
         }
+    }
+
+    export(target: IWriteDriver): void {
+        target.router1 = this.router1;
+        target.routerX = this.routerX;
     }
 
     add(handler: Handler<any> | Handler<any>[], filter?: (value: any) => boolean): void {
         if (filter) {
-            const subRoute = new WriteRoute();
-            subRoute.add(handler);
-            const r1 = subRoute.writeRouter1;
-            const rX = subRoute.writeRouterX;
-            if (r1) this.writeRouter1 = MERGE1(value => (filter(value) && r1(value)), this.writeRouter1);
-            if (rX) this.writeRouterX = MERGEX(value => (filter(value) && rX(value)), this.writeRouterX);
+            const driver = new WriteDriver();
+            driver.add(handler);
+            const r1 = driver.router1;
+            const rX = driver.routerX;
+            if (r1) this.router1 = MERGE1(value => (filter(value) && r1(value)), this.router1);
+            if (rX) this.routerX = MERGEX(value => (filter(value) && rX(value)), this.routerX);
             return;
         }
 
@@ -46,14 +50,12 @@ export class WriteRoute implements WriteDriver {
             return handler.slice().reverse().forEach(h => this.add(h));
         }
 
-        if (!handler.match) return;
-
         if (isHandler1(handler)) {
-            this.writeRouter1 = ADD1(handler, this.writeRouter1);
+            this.router1 = ADD1(handler, this.router1);
         }
 
         if (isHandlerX(handler)) {
-            this.writeRouterX = ADDX(handler, this.writeRouterX);
+            this.routerX = ADDX(handler, this.routerX);
         }
     }
 }
