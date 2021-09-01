@@ -2,9 +2,8 @@
  * @see https://github.com/kawanet/binjson
  */
 
-import * as B from "./bufjson";
+import {bufJSON} from "./bufjson";
+import {binJSON} from "./binjson";
+import {handlers} from "./read-router";
 
-export {handlers} from "./read-router";
-export {binJSON} from "./binjson";
-
-export const bufJSON = B && B.bufJSON;
+export = {binJSON, bufJSON, handlers}

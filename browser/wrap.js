@@ -15,8 +15,7 @@ var binjson = (function(main, exports, init) {
     defined[name] = function() {
       var exports = loaded.exports = bridge[name] || {};
       var module = loaded.module = {exports: exports};
-      fn.apply(null, deps.map(require));
-      return module.exports;
+      return fn.apply(null, deps.map(require)) || module.exports;
     }
   }
 })("index", ("undefined" != typeof exports) && exports, function(define) {
