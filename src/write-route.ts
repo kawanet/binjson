@@ -20,9 +20,9 @@ export interface WriteDriver {
     writeRouterX?: WriteRouterX;
 }
 
-export class WriteRoute {
-    private writeRouter1?: WriteRouter1;
-    private writeRouterX?: WriteRouterX;
+export class WriteRoute implements WriteDriver {
+    writeRouter1?: WriteRouter1;
+    writeRouterX?: WriteRouterX;
 
     constructor(driver?: WriteDriver) {
         if (driver) {
@@ -35,8 +35,8 @@ export class WriteRoute {
         if (filter) {
             const subRoute = new WriteRoute();
             subRoute.add(handler);
-            const r1 = subRoute.router1();
-            const rX = subRoute.routerX();
+            const r1 = subRoute.writeRouter1;
+            const rX = subRoute.writeRouterX;
             if (r1) this.writeRouter1 = MERGE1(value => (filter(value) && r1(value)), this.writeRouter1);
             if (rX) this.writeRouterX = MERGEX(value => (filter(value) && rX(value)), this.writeRouterX);
             return;
@@ -55,14 +55,6 @@ export class WriteRoute {
         if (isHandlerX(handler)) {
             this.writeRouterX = ADDX(handler, this.writeRouterX);
         }
-    }
-
-    router1(): WriteRouter1 {
-        return this.writeRouter1;
-    }
-
-    routerX(): WriteRouterX {
-        return this.writeRouterX;
     }
 }
 

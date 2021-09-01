@@ -26,14 +26,14 @@ const defaultWrite = defaultWriteRoute;
 const defaultRead = defaultReadRoute;
 
 function updateReadRouter(target: ReadDriver, base: ReadDriver, options: binjson.Options): void {
-    let router1 = base?.readRouter1 || defaultRead.router1();
-    let routerX = base?.readRouterX || defaultRead.routerX();
+    let router1 = base?.readRouter1 || defaultRead.readRouter1;
+    let routerX = base?.readRouterX || defaultRead.readRouterX;
 
     if (options?.handler) {
         const route = new ReadRoute({readRouter1: router1, readRouterX: routerX});
         route.add(options.handler);
-        router1 = route.router1();
-        routerX = route.routerX();
+        router1 = route.readRouter1;
+        routerX = route.readRouterX;
     }
 
     target.readRouter1 = router1;
@@ -41,14 +41,14 @@ function updateReadRouter(target: ReadDriver, base: ReadDriver, options: binjson
 }
 
 function updateWriteRouter(target: WriteDriver, base: WriteDriver, options: binjson.Options): void {
-    let router1 = base?.writeRouter1 || defaultWrite.router1();
-    let routerX = base?.writeRouterX || defaultWrite.routerX();
+    let router1 = base?.writeRouter1 || defaultWrite.writeRouter1;
+    let routerX = base?.writeRouterX || defaultWrite.writeRouterX;
 
     if (options?.handler) {
         const route = new WriteRoute({writeRouter1: router1, writeRouterX: routerX});
         route.add(options.handler);
-        router1 = route.router1();
-        routerX = route.routerX();
+        router1 = route.writeRouter1;
+        routerX = route.writeRouterX;
     }
 
     target.writeRouter1 = router1;

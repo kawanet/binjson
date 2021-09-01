@@ -21,7 +21,7 @@ export interface ReadDriver {
     readRouterX?: ReadRouterX;
 }
 
-export class ReadRoute {
+export class ReadRoute implements ReadDriver {
     private idx1: Router1Index;
     private idxX: RouterXIndex;
     readRouter1?: ReadRouter1;
@@ -64,22 +64,6 @@ export class ReadRoute {
         } else if (subtag != null) {
             this.idxX[subtag >>> 0] = handler;
         }
-    }
-
-    /**
-     * ReadRouter for Tag
-     */
-
-    router1(): ReadRouter1 {
-        return this.readRouter1;
-    }
-
-    /**
-     * ReadRouter for SubTag
-     */
-
-    routerX(): ReadRouterX {
-        return this.readRouterX;
     }
 }
 
