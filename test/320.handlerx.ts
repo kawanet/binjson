@@ -23,11 +23,11 @@ describe(TITLE, () => {
     const myHandler: binjson.HandlerX<MyClass, number> = {
         subtag: murmur3(MyClass.name),
 
-        read: (next) => new MyClass(next()),
+        decode: (payload) => new MyClass(payload),
 
         match: (value) => (value instanceof MyClass),
 
-        write: (value, next) => next(value.val),
+        encode: (value) => value.val,
     };
 
     it("handler", () => {

@@ -61,7 +61,7 @@ export function encode(driver: IWriteDriver, value: any, buf: WriteBuf): Uint8Ar
         if (handlerX) {
             buf.tag(Tag.kExtension);
             buf.writeI32(handlerX.subtag);
-            handlerX.write(value, next);
+            next(handlerX.encode(value));
         } else {
             handler1.write(buf, value, next);
         }

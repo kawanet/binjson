@@ -49,14 +49,14 @@ export declare module binjson {
         native?: boolean;
     }
 
-    interface HandlerX<T, P = never> {
+    interface HandlerX<T, P> {
         subtag: number;
 
-        read: (next: () => P) => T;
+        decode: (payload: P) => T;
 
         match: (value: any) => boolean;
 
-        write: (value: T, next: (value: P) => void) => void;
+        encode: (value: T) => P;
     }
 
     /**

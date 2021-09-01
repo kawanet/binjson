@@ -13,9 +13,9 @@ import {Binary} from "./h-binary";
 export const hBuffer: binjson.HandlerX<Buffer, Binary> = {
     subtag: SubTag.Buffer,
 
-    read: (next) => Buffer.from(next().subarray()),
+    decode: (binary) => Buffer.from(binary.subarray()),
 
     match: value => Buffer.isBuffer(value),
 
-    write: (value, next) => next(Binary.from(value)),
+    encode: Binary.from,
 };

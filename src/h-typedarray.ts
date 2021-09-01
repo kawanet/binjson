@@ -18,8 +18,8 @@ function initHandlers() {
 
         handler.subtag = subtag;
 
-        handler.read = (next) => {
-            let data: Uint8Array = next().subarray();
+        handler.decode = (binary) => {
+            let data: Uint8Array = binary.subarray();
 
             // copy memory for Uint16Array etc.
             // RangeError: start offset of XX should be a multiple of XX
@@ -33,7 +33,7 @@ function initHandlers() {
 
         handler.match = match;
 
-        handler.write = (value, next) => next(Binary.from(value));
+        handler.encode = Binary.from;
 
         handlers.push(handler);
     };
@@ -59,12 +59,12 @@ export const hArrayBufferView = initHandlers();
 export const hArrayBuffer: binjson.HandlerX<ArrayBuffer, Binary> = {
     subtag: SubTag.ArrayBuffer,
 
-    read: (next) => {
-        const {buffer, byteOffset, byteLength} = next().subarray();
+    decode: (binary) => {
+        const {buffer, byteOffset, byteLength} = binary.subarray();
         return buffer.slice(byteOffset, byteOffset + byteLength);
     },
 
     match: (value) => (value instanceof ArrayBuffer),
 
-    write: ((value, next) => next(Binary.from(new Uint8Array(value)))),
+    encode: ((value) => Binary.from(new Uint8Array(value))),
 };
