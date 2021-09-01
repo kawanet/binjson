@@ -10,14 +10,9 @@
 const {binJSON} = require("binjson");
 
 const src = {text: "string", data: new Uint8Array([1, 2, 3, 4])};
-
-const str = binJSON.stringify(src); // => string
-const obj1 = binJSON.decode(str); // => object
-(obj1.data instanceof Uint8Array); // => true
-
 const bin = binJSON.encode(object); // => Uint8Array
-const obj2 = binJSON.decode(bin); // => object
-(obj2.data instanceof Uint8Array); // => true
+const obj = binJSON.decode(bin); // => object
+(obj.data instanceof Uint8Array); // => true
 ```
 
 Good old `JSON.stringify()` does not support binary on the other hand.
@@ -25,8 +20,8 @@ Good old `JSON.stringify()` does not support binary on the other hand.
 ```js
 const src = {text: "string", data: new Uint8Array([1, 2, 3, 4])};
 const json = JSON.stringify(src); // => string
-const obj3 = bufJSON.decode(json); // => object
-(obj3.data instanceof Uint8Array); // => false
+const obj = bufJSON.decode(json); // => object
+(obj.data instanceof Uint8Array); // => false
 ```
 
 ### Node.js
@@ -38,11 +33,41 @@ const {bufJSON} = require("binjson");
 
 const src = {text: "string", data: Buffer.from([1, 2, 3, 4])};
 const buf = bufJSON.encode(src); // => Buffer
-const obj4 = bufJSON.decode(buf); // => object
-(obj4.data instanceof Buffer); // => true
+const obj = bufJSON.decode(buf); // => object
+(obj.data instanceof Buffer); // => true
 ```
 
+## EXTENSION
+
+`binJSON` is extensible to serialize your own class content.
+
+```js
+const {bufJSON} = require("binjson");
+const {murmur3} = require("murmurhash-js");
+
+class MyClass {
+  // something here
+}
+
+const handlerX = {
+  tagX: murmur3(MyClass.name), // => 0x50bdf49f
+  match: v => (v instanceof MyClass),
+  encode: v => v.internalValue,
+  decode: v => new MyClass(v),
+};
+
+const codec = binJSON.extend({handler: handlerX});
+const src = {data: new MyClass()};
+const bin = codec.encode(src); // => Uint8Array
+const obj = codec.decode(bin); // => object
+(obj.data instanceof MyClass); // => true
+```
+
+## FORMAT
+
 ### Tag
+
+Single byte uint8 `tag` number represents basic value types as below:
 
 | name | tag | hex | JavaScript | payload |
 |----|----|----|----|----|
@@ -59,26 +84,27 @@ const obj4 = bufJSON.decode(buf); // => object
 | kObjectBegin | `<` | `3C ... 3E` | object | packets |
 | kObjectEnd | `>` | `3E` |||
 | kNumber0 | `0` - `9` | `30` - `39` | number ||
-| kString0 | (96-255) | `60` - `FF ...` | string | UTF-8 |
+| kString0 | (96 - 255) | `60` - `FF ...` | string | UTF-8 |
 | kString16 | `S` | `53 hh hh ...` | string | UTF-8 |
 | kString32 | `^S` | `13 hh hh hh hh ...` | string | UTF-8 |
 | kWideString16 | `W` | `57 hh hh ...` | string | UTF-16 |
 | kWideString32 | `^W` | `17 hh hh hh hh ...` | string | UTF-16 |
-| kBinary16 | `B` | `42 hh hh ...` | (Uint8Array) | binary |
-| kBinary32 | `^B` | `02 hh hh hh hh ...` | (Uint8Array) | binary |
-| kExtension | `$` | `24 hh hh hh hh ...` | any | packet |
-| (unused) | `"` `[` `{` | `22` `5B` `7B` |||
+| kBinary16 | `B` | `42 hh hh ...` | (Uint8Array) | Binary |
+| kBinary32 | `^B` | `02 hh hh hh hh ...` | (Uint8Array) | Binary |
+| kExtension | `$` | `24 hh hh hh hh ...` | object | packet |
+| (reserved) | (27 - 31) | `1B` `1C` `1D` `1E` `1F` | N/A ||
 
-`"` `[` `{` are not valid tags of binJSON to avoid confusion with JSON.
+Tag 27 to 31 are reserved for your app's any specific purpose.
+E.g., test scripts use them for testing purpose.
 
-### SubTag
+### TagX
 
-Subtag uint32 number is given via Murmur3 (MurmurHash v3) digest.
+4 byte uint32 `tagX` number represents type of encapsulated object payload.
 
-| name | subtag | hex | payload |
+| object | tagX | hex | payload |
 |----|----|----|----|
 | Date | `0xfaaabc6e` | `24 FA AA BC 6E 4E ...` | kDouble |
-| RegExp | `0xa92ae3dc` | `24 A9 2A E3 DC 28 ... 29` | kStringX / kArrayBegin |
+| RegExp | `0xa92ae3dc` | `24 A9 2A E3 DC 28 ... 29` | kArrayBegin |
 | Map | `0x441c30df` | `24 44 1C 30 DF 28 ... 29` | kArrayBegin |
 | Set | `0xf18ec750` | `24 F1 8E C7 50 28 ... 29` | kArrayBegin |
 | ArrayBuffer | `0x3c63bb3b` | `24 3C 63 BB 3B x2 hh ...` | kBinary16 / kBinary32 |
@@ -96,7 +122,11 @@ Subtag uint32 number is given via Murmur3 (MurmurHash v3) digest.
 | DataView | `0xd3ad5ca2` | `24 D3 AD 5C A2 x2 hh ...` | kBinary16 / kBinary32 |
 | Buffer | `0x2cceb034` | `24 2C CE B0 34 x2 hh ...` | kBinary16 / kBinary32 |
 
-### LINKS
+TagX is any number of your choice or simply given via Murmur3 (MurmurHash v3) digest hash function.
+[murmurhash-js](https://www.npmjs.com/package/murmurhash-js) works great for the hash calculation.
+
+## LINKS
 
 - https://github.com/kawanet/binjson
 - https://www.npmjs.com/package/binjson
+- https://www.npmjs.com/package/murmurhash-js
