@@ -21,7 +21,7 @@ describe(TITLE, () => {
     }
 
     const myHandler: binjson.HandlerX<MyClass, number> = {
-        subtag: murmur3(MyClass.name),
+        tagX: murmur3(MyClass.name),
 
         decode: (payload) => new MyClass(payload),
 
@@ -31,7 +31,7 @@ describe(TITLE, () => {
     };
 
     it("handler", () => {
-        assert.equal(myHandler.subtag?.toString(16), "50bdf49f");
+        assert.equal(myHandler.tagX?.toString(16), "50bdf49f");
 
         const myJSON = binJSON.extend({handler: myHandler});
         const data = {foo: new MyClass(123), bar: new MyClass(456)};

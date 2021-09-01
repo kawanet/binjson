@@ -13,7 +13,7 @@ export type WriteRouter1 = (value: any) => WriteHandler1<any>;
 export type WriteRouterX = (value: any) => HandlerX<any>;
 
 const isHandler1 = (handler: any): handler is Handler1<any> => !!handler?.tag;
-const isHandlerX = (handler: any): handler is HandlerX<any> => !!handler?.subtag;
+const isHandlerX = (handler: any): handler is HandlerX<any> => !!handler?.tagX;
 
 export interface IWriteDriver {
     router1?: WriteRouter1;

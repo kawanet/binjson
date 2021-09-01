@@ -17,8 +17,8 @@ export function decode(driver: IReadDriver, buf: ReadBuf): any {
         }
 
         if (tag === Tag.kExtension) {
-            const subtag = buf.readI32() >>> 0;
-            const handlerX = routerX(subtag);
+            const tagX = buf.readI32() >>> 0;
+            const handlerX = routerX(tagX);
             if (handlerX) {
                 return handlerX.decode(next());
             }

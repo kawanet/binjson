@@ -3,7 +3,7 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {SubTag} from "./enum";
+import {TagX} from "./enum";
 import {Binary} from "./h-binary";
 
 /**
@@ -11,7 +11,7 @@ import {Binary} from "./h-binary";
  */
 
 export const hBuffer: binjson.HandlerX<Buffer, Binary> = {
-    subtag: SubTag.Buffer,
+    tagX: TagX.Buffer,
 
     decode: (binary) => Buffer.from(binary.subarray()),
 

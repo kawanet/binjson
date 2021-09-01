@@ -60,7 +60,7 @@ export function encode(driver: IWriteDriver, value: any, buf: WriteBuf): Uint8Ar
         // perform encoding
         if (handlerX) {
             buf.tag(Tag.kExtension);
-            buf.writeI32(handlerX.subtag);
+            buf.writeI32(handlerX.tagX);
             next(handlerX.encode(value));
         } else {
             handler1.write(buf, value, next);

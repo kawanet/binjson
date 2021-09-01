@@ -12,7 +12,7 @@ const toHex = (obj: Buffer | number[]) => [].map.call(obj, (v: number) => (0x100
 DESCRIBE(TITLE, () => {
     const myJSON = binJSON.extend({handler: handlers.Buffer});
 
-    it("SubTag.Buffer", () => {
+    it("handlers.Buffer", () => {
         const data = new Uint8Array([0x24, 0x2c, 0xce, 0xb0, 0x34, 0x42, 0x00, 0x03, 0x41, 0x42, 0x43]);
         const decoded = myJSON.decode(data);
         assert.equal(Buffer.isBuffer(decoded), true);

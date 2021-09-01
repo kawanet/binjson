@@ -9,12 +9,12 @@ type Handler1 = binjson.Handler1<any, any>;
 type HandlerX = binjson.HandlerX<any, any>;
 
 export type ReadRouter1 = (tag: number) => binjson.Handler1<any, any>;
-export type ReadRouterX = (subtag: number) => binjson.HandlerX<any, any>;
+export type ReadRouterX = (tagX: number) => binjson.HandlerX<any, any>;
 type Router1Index = Handler1[];
 type RouterXIndex = { [key: string]: HandlerX };
 
-const isHandlerX = (handler: any): handler is HandlerX => !!handler?.subtag;
 const isHandler1 = (handler: any): handler is Handler1 => !!handler?.tag;
+const isHandlerX = (handler: any): handler is HandlerX => !!handler?.tagX;
 
 export interface IReadDriver {
     router1?: ReadRouter1;
@@ -49,7 +49,7 @@ export class ReadDriver implements IReadDriver {
         }
 
         if (isHandlerX(handler)) {
-            this.addX(handler.subtag, handler);
+            this.addX(handler.tagX, handler);
         }
     }
 
@@ -61,11 +61,11 @@ export class ReadDriver implements IReadDriver {
         }
     }
 
-    private addX(subtag: number | number[], handler: HandlerX): void {
-        if (Array.isArray(subtag)) {
-            subtag.forEach(t => this.addX(t, handler));
-        } else if (subtag != null) {
-            this.iX[subtag >>> 0] = handler;
+    private addX(tagX: number | number[], handler: HandlerX): void {
+        if (Array.isArray(tagX)) {
+            tagX.forEach(t => this.addX(t, handler));
+        } else if (tagX != null) {
+            this.iX[tagX >>> 0] = handler;
         }
     }
 }

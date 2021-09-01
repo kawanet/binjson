@@ -36,6 +36,10 @@ export declare module binjson {
 
     type Handler<T> = Handler1<T, any> | HandlerX<T, any>;
 
+    /**
+     * Handler1: 1st class data handler
+     */
+
     interface Handler1<T, P = never> {
         tag: number | number[];
 
@@ -49,8 +53,13 @@ export declare module binjson {
         native?: boolean;
     }
 
+    /**
+     * HandlerX: extended data object handler
+     */
+
     interface HandlerX<T, P> {
-        subtag: number;
+        // node -e "console.log(require('murmurhash-js')(process.argv[1]).toString(16))" "ClassName"
+        tagX: number;
 
         decode: (payload: P) => T;
 

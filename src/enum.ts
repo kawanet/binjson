@@ -7,7 +7,7 @@ export const enum defaults {
 }
 
 /**
- * Tag: uint8
+ * uint8 tag number for Handler1
  */
 
 export const enum Tag {
@@ -38,13 +38,13 @@ export const enum Tag {
 }
 
 /**
- * SubTag: uint32
+ * uint32 tag number for HandlerX
  *
  * @example
- * node -e "console.log(require('murmurhash-js')(process.argv[1]).toString(16))" "Date"
+ * node -e "console.log(require('murmurhash-js')(process.argv[1]).toString(16))" "ClassName"
  */
 
-export const enum SubTag {
+export const enum TagX {
     Date = 0xfaaabc6e,
     RegExp = 0xa92ae3dc,
     Map = 0x441c30df,

@@ -19,7 +19,7 @@ interface Fn {
 }
 
 describe(TITLE, () => {
-    it("SubTag.Uint8Array", () => {
+    it("handlers.Uint8Array", () => {
         assert(toHex([10, 11, 12, 13, 14, 15]), "0a-0b-0c-0d-0e-0f");
 
         const data = new Uint8Array([0x24, 0xe6, 0xed, 0x42, 0xfd, 2, 0, 0, 0, 4, 0x41, 0x42, 0x43, 0x44]);
@@ -28,7 +28,7 @@ describe(TITLE, () => {
         assert.deepEqual(toHex(decoded), "41-42-43-44");
     });
 
-    it("SubTag.Uint32Array", () => {
+    it("handlers.Uint32Array", () => {
         const data = new Uint8Array([0x24, 0xf9, 0x8d, 0xfe, 0x49, 2, 0, 0, 0, 4, 0x41, 0x42, 0x43, 0x44]);
         const decoded = binJSON.decode(data);
         assert.equal(decoded instanceof Uint32Array, true);

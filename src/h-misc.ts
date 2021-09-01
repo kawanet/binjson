@@ -3,7 +3,7 @@
  */
 
 import type {binjson} from "../types/binjson";
-import {SubTag, Tag} from "./enum";
+import {TagX, Tag} from "./enum";
 
 /**
  * undefined
@@ -31,7 +31,7 @@ export const hUndefined: binjson.Handler1<undefined> = {
  */
 
 export const hDate: binjson.HandlerX<Date, number> = {
-    subtag: SubTag.Date,
+    tagX: TagX.Date,
 
     decode: (value) => new Date(value),
 
@@ -65,7 +65,7 @@ export const hNull: binjson.Handler1<null> = {
  */
 
 export const hRegExp: binjson.HandlerX<RegExp, string[]> = {
-    subtag: SubTag.RegExp,
+    tagX: TagX.RegExp,
 
     decode: (array) => {
         const [source, flags] = array;
