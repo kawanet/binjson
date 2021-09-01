@@ -21,13 +21,13 @@ export interface WriteDriver {
 }
 
 export class WriteRoute {
-    private wr1?: WriteRouter1;
-    private wrX?: WriteRouterX;
+    private writeRouter1?: WriteRouter1;
+    private writeRouterX?: WriteRouterX;
 
     constructor(driver?: WriteDriver) {
         if (driver) {
-            this.wr1 = driver.writeRouter1;
-            this.wrX = driver.writeRouterX;
+            this.writeRouter1 = driver.writeRouter1;
+            this.writeRouterX = driver.writeRouterX;
         }
     }
 
@@ -37,8 +37,8 @@ export class WriteRoute {
             subRoute.add(handler);
             const r1 = subRoute.router1();
             const rX = subRoute.routerX();
-            if (r1) this.wr1 = MERGE1(value => (filter(value) && r1(value)), this.wr1);
-            if (rX) this.wrX = MERGEX(value => (filter(value) && rX(value)), this.wrX);
+            if (r1) this.writeRouter1 = MERGE1(value => (filter(value) && r1(value)), this.writeRouter1);
+            if (rX) this.writeRouterX = MERGEX(value => (filter(value) && rX(value)), this.writeRouterX);
             return;
         }
 
@@ -49,20 +49,20 @@ export class WriteRoute {
         if (!handler.match) return;
 
         if (isHandler1(handler)) {
-            this.wr1 = ADD1(handler, this.wr1);
+            this.writeRouter1 = ADD1(handler, this.writeRouter1);
         }
 
         if (isHandlerX(handler)) {
-            this.wrX = ADDX(handler, this.wrX);
+            this.writeRouterX = ADDX(handler, this.writeRouterX);
         }
     }
 
-    router1(base?: WriteRouter1): WriteRouter1 {
-        return MERGE1(this.wr1, base);
+    router1(): WriteRouter1 {
+        return this.writeRouter1;
     }
 
-    routerX(base?: WriteRouterX): WriteRouterX {
-        return MERGEX(this.wrX, base);
+    routerX(): WriteRouterX {
+        return this.writeRouterX;
     }
 }
 

@@ -30,10 +30,10 @@ function updateReadRouter(target: ReadDriver, base: ReadDriver, options: binjson
     let routerX = base?.readRouterX || defaultRead.routerX();
 
     if (options?.handler) {
-        const route = new ReadRoute();
+        const route = new ReadRoute({readRouter1: router1, readRouterX: routerX});
         route.add(options.handler);
-        router1 = route.router1(router1);
-        routerX = route.routerX(routerX);
+        router1 = route.router1();
+        routerX = route.routerX();
     }
 
     target.readRouter1 = router1;
@@ -45,10 +45,10 @@ function updateWriteRouter(target: WriteDriver, base: WriteDriver, options: binj
     let routerX = base?.writeRouterX || defaultWrite.routerX();
 
     if (options?.handler) {
-        const route = new WriteRoute();
+        const route = new WriteRoute({writeRouter1: router1, writeRouterX: routerX});
         route.add(options.handler);
-        router1 = route.router1(router1);
-        routerX = route.routerX(routerX);
+        router1 = route.router1();
+        routerX = route.routerX();
     }
 
     target.writeRouter1 = router1;

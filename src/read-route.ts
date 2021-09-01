@@ -10,6 +10,8 @@ type HandlerX = binjson.HandlerX<any, any>;
 
 export type ReadRouter1 = (tag: number) => binjson.Handler1<any, any>;
 export type ReadRouterX = (subtag: number) => binjson.HandlerX<any, any>;
+type Router1Index = Handler1[];
+type RouterXIndex = { [key: string]: HandlerX };
 
 const isHandlerX = (handler: any): handler is HandlerX => !!handler?.subtag;
 const isHandler1 = (handler: any): handler is Handler1 => !!handler?.tag;
@@ -20,8 +22,19 @@ export interface ReadDriver {
 }
 
 export class ReadRoute {
-    private idx1: Handler1[] = [];
-    private idxX: { [key: string]: HandlerX } = {};
+    private idx1: Router1Index;
+    private idxX: RouterXIndex;
+    readRouter1?: ReadRouter1;
+    readRouterX?: ReadRouterX;
+
+    constructor(base?: ReadDriver) {
+
+        const index1: Router1Index = this.idx1 = [];
+        const indexX: RouterXIndex = this.idxX = {};
+
+        this.readRouter1 = GEN1(index1, base?.readRouter1);
+        this.readRouterX = GENX(indexX, base?.readRouterX);
+    }
 
     add(handler: Handler | (Handler | Handler[])[]): void {
         if (Array.isArray(handler)) {
@@ -57,25 +70,31 @@ export class ReadRoute {
      * ReadRouter for Tag
      */
 
-    router1(base?: ReadRouter1): (tag: number) => Handler1 {
-        const {idx1} = this;
-        if (base) {
-            return tag => (idx1[tag] || base(tag));
-        } else {
-            return tag => idx1[tag];
-        }
+    router1(): ReadRouter1 {
+        return this.readRouter1;
     }
 
     /**
      * ReadRouter for SubTag
      */
 
-    routerX(base?: ReadRouterX): (subtag: number) => HandlerX {
-        const {idxX} = this;
-        if (base) {
-            return tag => (idxX[tag >>> 0] || base(tag));
-        } else {
-            return tag => idxX[tag >>> 0];
-        }
+    routerX(): ReadRouterX {
+        return this.readRouterX;
     }
 }
+
+const GEN1 = (index: Router1Index, base: ReadRouter1): ReadRouter1 => {
+    if (base) {
+        return tag => (index[tag >>> 0] || base(tag));
+    } else {
+        return tag => index[tag >>> 0];
+    }
+};
+
+const GENX = (index: RouterXIndex, base: ReadRouterX): ReadRouterX => {
+    if (base) {
+        return tag => (index[tag >>> 0] || base(tag));
+    } else {
+        return tag => index[tag >>> 0];
+    }
+};
