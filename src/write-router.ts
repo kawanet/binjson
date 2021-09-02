@@ -83,16 +83,16 @@ const hStringObject: WriteHandler1<string | String> = {
 const typeofRouter: WriteRouter1<any> = value => {
     if ("string" === typeof value) return stringRouter(value);
     if ("number" === typeof value) return numberRouter(value);
-    if ("object" === typeof value) return eagerObjectRouter(value);
+
+    if (value) {
+        const {constructor} = value;
+        if (constructor === Object) return hObjectBegin;
+        if (constructor === Array) return hArrayBegin;
+        if (constructor === Binary) return hBinary;
+    }
+
     if ("boolean" === typeof value) return booleanRouter(value);
     if ("bigint" === typeof value) return hBigInt;
-};
-
-const eagerObjectRouter: WriteRouter1<object> = value => {
-    if (value === null) return hNull;
-    if (value.constructor === Object) return hObjectBegin;
-    if (value.constructor === Array) return hArrayBegin;
-    if (value.constructor === Binary) return hBinary;
 };
 
 /**
