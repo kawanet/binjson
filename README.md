@@ -75,7 +75,7 @@ Surprisingly, binJSON encoded binary data is still **human-readable** as a strin
 ```js
 bufJSON.encode(true).toString(); // => "T"
 bufJSON.encode(false).toString(); // => "F"
-bufJSON.encode(null).toString(); // => "?"
+bufJSON.encode(null).toString(); // => "N"
 bufJSON.encode(0).toString(); // => "0"
 bufJSON.encode(9).toString(); // => "9"
 bufJSON.encode([1, 2, 3]).toString(); // => "(123)"
@@ -100,7 +100,7 @@ Single byte uint8 `tag` number represents primitive value types as below:
 | name | tag | hex | JavaScript | payload |
 |----|----|----|----|----|
 | kUndefined | `_` | `5F` | undefined ||
-| kNull | `?` | `3F` | null ||
+| kNull | `N` | `4E` | null ||
 | kTrue | `T` | `54` | boolean ||
 | kFalse | `F` | `46` | boolean ||
 | kInt32 | `I` | `49 xx xx xx xx` | number | int32 |

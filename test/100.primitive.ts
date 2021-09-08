@@ -13,7 +13,7 @@ describe(TITLE, () => {
     });
 
     // kNull
-    test("?", 1, null);
+    test("N", 1, null);
 
     // kTrue
     test("T", 1, true);

@@ -10,7 +10,7 @@ const toHex = (obj: Uint8Array) => [].map.call(obj, (v: number) => (0x100 | v).t
 
 describe(TITLE, () => {
     {
-        const text = "(TF?0)";
+        const text = "(TFN0)";
         const expected = [true, false, null, 0];
         it(text, () => {
             const data = toU8A(text);

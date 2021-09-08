@@ -17,8 +17,7 @@ export const enum Tag {
     kInt32 = 0x49, // I
     kDouble = 0x44, // D
     kBigInt = 0x5A, // Z
-
-    kNull = 0x3F, // ?
+    kNull = 0x4E, // N
     kNumber0 = 0x30, // 0
     kString0 = 0x60, // `
     kString16 = 0x53, // S
