@@ -99,13 +99,12 @@ Single byte uint8 `tag` number represents primitive value types as below:
 
 | name | tag | hex | JavaScript | payload |
 |----|----|----|----|----|
-| kPadding | `\0` | `00` | N/A ||
 | kUndefined | `_` | `5F` | undefined ||
 | kNull | `?` | `3F` | null ||
 | kTrue | `T` | `54` | boolean ||
 | kFalse | `F` | `46` | boolean ||
 | kInt32 | `I` | `49 xx xx xx xx` | number | int32 |
-| kDouble | `N` | `4E xx xx xx xx xx xx xx xx` | number | float64 |
+| kDouble | `D` | `44 xx xx xx xx xx xx xx xx` | number | float64 |
 | kBigInt | `Z` | `5A ...` | BigInt | string packet |
 | kArrayBegin | `(` | `28 ... 29` | `[` | any packets |
 | kArrayEnd | `)` | `29` | `]` ||
@@ -129,7 +128,7 @@ E.g., test scripts use them for testing purpose.
 
 | object | tagX | hex | payload |
 |----|----|----|----|
-| Date | `0xfaaabc6e` | `24 FA AA BC 6E 4E ...` | kDouble |
+| Date | `0xfaaabc6e` | `24 FA AA BC 6E 44 ...` | kDouble |
 | RegExp | `0xa92ae3dc` | `24 A9 2A E3 DC 28 ... 29` | kArrayBegin |
 | Map | `0x441c30df` | `24 44 1C 30 DF 28 ... 29` | kArrayBegin |
 | Set | `0xf18ec750` | `24 F1 8E C7 50 28 ... 29` | kArrayBegin |

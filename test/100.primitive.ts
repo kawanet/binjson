@@ -38,8 +38,8 @@ describe(TITLE, () => {
     test("I", 5, -1);
 
     // kDouble
-    test("N", 9, 0.5);
-    test("N", 9, -0.5);
+    test("D", 9, 0.5);
+    test("D", 9, -0.5);
 
     function test(tag: string, size: number, value: any): void {
         it(`[${tag}] ` + JSON.stringify(value), () => {
