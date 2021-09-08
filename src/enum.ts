@@ -26,8 +26,6 @@ export const enum Tag {
     kString0 = 0x60, // `
     kString16 = 0x53, // S
     kString32 = 0x13, // ^S
-    kWideString16 = 0x57, // W
-    kWideString32 = 0x17, // ^W
     kBinary16 = 0x42, // B
     kBinary32 = 0x02, // ^B
     kObjectBegin = 0x3C, // <

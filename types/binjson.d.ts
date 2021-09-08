@@ -1,3 +1,5 @@
+import {hStringBuffer, hStringNative, hStringPureJS} from "../src/h-string";
+
 /**
  * @see https://github.com/kawanet/binjson
  */
@@ -26,8 +28,9 @@ export declare module binjson {
         Date: Handler<Date>;
         RegExp: Handler<RegExp>;
         Undefined: Handler<undefined>;
-        UTF8: Handler<string>;
-        UTF16: Handler<string>;
+        StringPureJS: Handler<string>;
+        StringBuffer: Handler<string>;
+        StringNative: Handler<string>;
     }
 
     /**

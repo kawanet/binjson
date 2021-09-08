@@ -87,8 +87,6 @@ Single byte uint8 `tag` number represents basic value types as below:
 | kString0 | (96 - 255) | `60` - `FF ...` | string | UTF-8 |
 | kString16 | `S` | `53 hh hh ...` | string | UTF-8 |
 | kString32 | `^S` | `13 hh hh hh hh ...` | string | UTF-8 |
-| kWideString16 | `W` | `57 hh hh ...` | string | UTF-16 |
-| kWideString32 | `^W` | `17 hh hh hh hh ...` | string | UTF-16 |
 | kBinary16 | `B` | `42 hh hh ...` | (Uint8Array) | Binary |
 | kBinary32 | `^B` | `02 hh hh hh hh ...` | (Uint8Array) | Binary |
 | kExtension | `$` | `24 hh hh hh hh ...` | object | packet |

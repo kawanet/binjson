@@ -6,8 +6,7 @@ import type {binjson} from "../types/binjson";
 import {hBinary} from "./h-binary";
 import {hBuffer} from "./h-buffer";
 import {hDate, hNull, hRegExp, hUndefined} from "./h-misc";
-import {hString} from "./h-string";
-import {hWideString} from "./h-widestring";
+import {hString, hStringBuffer, hStringNative, hStringPureJS} from "./h-string";
 import {hArrayBegin, hArrayEnd} from "./h-array";
 import {hArrayBuffer, hArrayBufferView} from "./h-typedarray";
 import {hBigInt, hDouble, hInt32, hNumber0} from "./h-number";
@@ -19,8 +18,9 @@ export const handlers: binjson.Handlers = {
     Buffer: hBuffer,
     Date: hDate,
     RegExp: hRegExp,
-    UTF8: hString,
-    UTF16: hWideString,
+    StringPureJS: hStringPureJS,
+    StringBuffer: hStringBuffer,
+    StringNative: hStringNative,
     Undefined: hUndefined,
 };
 
@@ -51,7 +51,6 @@ const initDefault = () => {
         hString,
         hTrue,
         hUndefined,
-        hWideString,
     ]);
 
     return driver;

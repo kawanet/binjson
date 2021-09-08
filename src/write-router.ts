@@ -11,7 +11,6 @@ import * as N from "./h-number";
 import * as O from "./h-object";
 import * as S from "./h-string";
 import * as T from "./h-typedarray";
-import * as W from "./h-widestring";
 import * as X from "./h-binary";
 import {WriteDriver} from "./write-driver";
 
@@ -26,7 +25,6 @@ const {hBigInt, hDouble, hInt32, hNumber0} = N;
 const {hObjectBegin} = O;
 const {hString} = S;
 const {hArrayBuffer, hArrayBufferView} = T;
-const {hWideString} = W;
 const {Binary, hBinary} = X;
 
 /**
@@ -60,19 +58,13 @@ const hNumberObject: WriteHandler1<number | Number> = {
 };
 
 /**
- * hUtf8String has better performance on short string.
- * hTwoByteString has better performance on long string.
+ * string
  */
-
-const stringRouter: WriteRouter1<string> = v => ((v.length <= 53) ? hString : hWideString);
 
 const hStringObject: WriteHandler1<string | String> = {
     native: true,
 
-    write: (buf, value, next) => {
-        const str = String(value);
-        return stringRouter(str).write(buf, str, next)
-    },
+    write: (buf, value, next) => hString.write(buf, String(value), next),
 };
 
 /**
@@ -81,7 +73,7 @@ const hStringObject: WriteHandler1<string | String> = {
  */
 
 const typeofRouter: WriteRouter1<any> = value => {
-    if ("string" === typeof value) return stringRouter(value);
+    if ("string" === typeof value) return hString;
     if ("number" === typeof value) return numberRouter(value);
 
     if (value) {

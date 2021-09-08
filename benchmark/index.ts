@@ -28,9 +28,10 @@ const SLEEP = (msec: number) => new Promise(resolve => setTimeout(resolve, msec)
 const SIZE = (data: any) => Buffer.from(JSON.stringify(data)).length;
 
 const handler: binjson.Handler<any>[] = [];
-const {UTF8, UTF16} = process.env;
-if (UTF8) handler.push(handlers.UTF8);
-if (UTF16) handler.push(handlers.UTF16);
+const {StringPureJS, StringBuffer, StringNative} = process.env;
+if (StringPureJS) handler.push(handlers.StringPureJS);
+if (StringBuffer) handler.push(handlers.StringBuffer);
+if (StringNative) handler.push(handlers.StringNative);
 const binJSON = _binJSON.extend({handler});
 
 async function CLI(argv: string[]) {
