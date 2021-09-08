@@ -4,13 +4,18 @@
 [![npm version](https://img.shields.io/npm/v/binjson)](https://www.npmjs.com/package/binjson)
 [![minified size](https://img.shields.io/bundlephobia/min/binjson)](https://cdn.jsdelivr.net/npm/binjson/dist/binjson.min.js)
 
+- `Uint8Array`, `ArrayBuffer`, `TypedArray`s supported as well as node.js' `Buffer`
+- `toJSON` method supported including `Date.prototype.toJSON`
+- extensible to encode/decode your own class content
+- human-readable binary representation in some cases
+
 ## SYNOPSIS
 
 ```js
 const {binJSON} = require("binjson");
 
 const src = {text: "string", data: new Uint8Array([1, 2, 3, 4])};
-const bin = binJSON.encode(object); // => Uint8Array
+const bin = binJSON.encode(src); // => Uint8Array
 const obj = binJSON.decode(bin); // => object
 (obj.data instanceof Uint8Array); // => true
 ```
@@ -65,9 +70,32 @@ const obj = codec.decode(bin); // => object
 
 ## FORMAT
 
+Surprisingly, binJSON encoded binary data is still **human-readable** as a string in some cases.
+
+```js
+bufJSON.encode(true).toString(); // => "T"
+bufJSON.encode(false).toString(); // => "F"
+bufJSON.encode(null).toString(); // => "?"
+bufJSON.encode(0).toString(); // => "0"
+bufJSON.encode(9).toString(); // => "9"
+bufJSON.encode([1, 2, 3]).toString(); // => "(123)"
+bufJSON.encode("").toString(); // => "`"
+bufJSON.encode("FOO").toString(); // => "cFOO"
+bufJSON.encode({BAR: true}).toString(); // => "<TcBAR>"
+bufJSON.encode({BUZ: ["A", "AB", "ABC"]}).toString(); // => "<(aAbABcABC)cBUZ>"
+```
+
+Following value types however are encoded as a raw binary. Most of us could not read them.
+
+- positive number larger than 9
+- negative number
+- floating number
+- string longer than 31 bytes
+- binary data
+
 ### Tag
 
-Single byte uint8 `tag` number represents basic value types as below:
+Single byte uint8 `tag` number represents primitive value types as below:
 
 | name | tag | hex | JavaScript | payload |
 |----|----|----|----|----|
@@ -78,21 +106,21 @@ Single byte uint8 `tag` number represents basic value types as below:
 | kFalse | `F` | `46` | boolean ||
 | kInt32 | `I` | `49 xx xx xx xx` | number | int32 |
 | kDouble | `N` | `4E xx xx xx xx xx xx xx xx` | number | float64 |
-| kBigInt | `Z` | `5A ...` | BigInt | packet |
-| kArrayBegin | `(` | `28 ... 29` | Array | packets |
-| kArrayEnd | `)` | `29` |||
-| kObjectBegin | `<` | `3C ... 3E` | object | packets |
-| kObjectEnd | `>` | `3E` |||
+| kBigInt | `Z` | `5A ...` | BigInt | string packet |
+| kArrayBegin | `(` | `28 ... 29` | `[` | any packets |
+| kArrayEnd | `)` | `29` | `]` ||
+| kObjectBegin | `<` | `3C ... 3E` | `{` | any packets |
+| kObjectEnd | `>` | `3E` | `}` ||
 | kNumber0 | `0` - `9` | `30` - `39` | number ||
 | kString0 | (96 - 255) | `60` - `FF ...` | string | UTF-8 |
 | kString16 | `S` | `53 hh hh ...` | string | UTF-8 |
 | kString32 | `^S` | `13 hh hh hh hh ...` | string | UTF-8 |
-| kBinary16 | `B` | `42 hh hh ...` | (Uint8Array) | Binary |
-| kBinary32 | `^B` | `02 hh hh hh hh ...` | (Uint8Array) | Binary |
-| kExtension | `$` | `24 hh hh hh hh ...` | object | packet |
+| kBinary16 | `B` | `42 hh hh ...` | (Binary) | binary data |
+| kBinary32 | `^B` | `02 hh hh hh hh ...` | (Binary) | binary data |
+| kExtension | `$` | `24 hh hh hh hh ...` | object | any packet |
 | (reserved) | (27 - 31) | `1B` `1C` `1D` `1E` `1F` | N/A ||
 
-Tag 27 to 31 are reserved for your app's any specific purpose.
+Tag `1B` to `1F` are reserved for your app's internal purpose.
 E.g., test scripts use them for testing purpose.
 
 ### TagX
@@ -121,7 +149,7 @@ E.g., test scripts use them for testing purpose.
 | Buffer | `0x2cceb034` | `24 2C CE B0 34 x2 hh ...` | kBinary16 / kBinary32 |
 
 TagX is any number of your choice or simply given via Murmur3 (MurmurHash v3) digest hash function.
-[murmurhash-js](https://www.npmjs.com/package/murmurhash-js) works great for the hash calculation.
+[murmurhash-js](https://www.npmjs.com/package/murmurhash-js) would work great for the hash calculation.
 
 ## LINKS
 
