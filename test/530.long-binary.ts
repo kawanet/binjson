@@ -8,6 +8,7 @@ const TITLE = __filename.split("/").pop();
 describe(TITLE, () => {
     const ten = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57];
 
+    test(0);
     test(1);
     test(10);
     test(100);

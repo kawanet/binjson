@@ -9,6 +9,7 @@ describe(TITLE, () => {
     let str = "123456789."; // 10 bytes
     str = str + str + str + str + str + str + str + str + str + str; // 100 bytes
 
+    test("(", str, 0);
     test("(", str, 1);
     test("(", str, 10);
     test("(", str, 100);

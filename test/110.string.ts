@@ -6,6 +6,25 @@ import {binJSON} from "../";
 const TITLE = __filename.split("/").pop();
 
 describe(TITLE, () => {
+
+    it("kString0", () => {
+        const data = new Uint8Array([0x63, 0x31, 0x32, 0x33]);
+        const decoded = binJSON.decode(data);
+        assert.deepEqual(decoded, "123");
+    });
+
+    it("kString16", () => {
+        const data = new Uint8Array([0x53, 0x00, 0x03, 0x41, 0x42, 0x43]);
+        const decoded = binJSON.decode(data);
+        assert.deepEqual(decoded, "ABC");
+    });
+
+    it("kString32", () => {
+        const data = new Uint8Array([0x13, 0x00, 0x00, 0x00, 0x03, 0x61, 0x62, 0x63]);
+        const decoded = binJSON.decode(data);
+        assert.deepEqual(decoded, "abc");
+    });
+
     test("");
 
     // U+0031
