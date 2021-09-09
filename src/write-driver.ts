@@ -12,8 +12,8 @@ type HandlerX<T> = binjson.HandlerX<T, any>;
 export type WriteRouter1 = (value: any) => WriteHandler1<any>;
 export type WriteRouterX = (value: any) => HandlerX<any>;
 
-const isHandler1 = (handler: any): handler is Handler1<any> => !!handler?.tag;
-const isHandlerX = (handler: any): handler is HandlerX<any> => !!handler?.tagX;
+const isHandler1 = (handler: any): handler is Handler1<any> => !!(handler && handler.tag && handler.write);
+const isHandlerX = (handler: any): handler is HandlerX<any> => !!(handler && handler.tagX && handler.encode);
 
 export interface IWriteDriver {
     router1?: WriteRouter1;

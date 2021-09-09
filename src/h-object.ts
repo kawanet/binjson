@@ -19,16 +19,13 @@ export const hObjectBegin: binjson.Handler1<object, any> = {
 
         const object: { [key: string]: any } = {};
 
-        while (1) {
-            if (buf.tag() === Tag.kObjectEnd) {
-                buf.pos++;
-                break;
-            }
+        while (buf.tag() !== Tag.kObjectEnd) {
             const val = next();
             const key = next();
-            if (key !== undefined) object[key] = val;
+            if (key != null) object[key] = val;
         }
 
+        buf.pos++;
         return object;
     },
 

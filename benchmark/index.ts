@@ -38,9 +38,16 @@ const binJSON = _binJSON.extend({handler});
 function prepare(bench: Bench): void {
     {
         const array: number[] = [];
-        for (let i = 0; i < 256; i++) array.push(i);
-        for (let j = 256; j < Number.MAX_SAFE_INTEGER; j *= 2) array.push(j);
-        bench.compatBench(`number ${SIZE(array)}`, array);
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) array.push(i); // 100 items
+        }
+        bench.compatBench(`small number ${SIZE(array)}`, array);
+    }
+
+    {
+        const array: number[] = [];
+        for (let j = 256; j < Number.MAX_SAFE_INTEGER; j *= 2) array.push(j); // 45 items
+        bench.compatBench(`large number ${SIZE(array)}`, array);
     }
 
     {
@@ -192,7 +199,7 @@ async function CLI(argv: string[]) {
     }
 
     const bench = new Bench((title, name, fn) => {
-        if (name) title += name;
+        if (name) title += " " + name;
         if (!filters.length || filters.some(filter => filter(title))) suite.add(title, fn);
     });
 

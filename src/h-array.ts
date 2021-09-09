@@ -19,14 +19,11 @@ export const hArrayBegin: binjson.Handler1<any[], any> = {
         buf.pos++;
         const array: any[] = [];
 
-        while (1) {
-            if (buf.tag() === Tag.kArrayEnd) {
-                buf.pos++;
-                break;
-            }
+        while (buf.tag() !== Tag.kArrayEnd) {
             array.push(next());
         }
 
+        buf.pos++;
         return array;
     },
 

@@ -13,8 +13,8 @@ export type ReadRouterX = (tagX: number) => binjson.HandlerX<any, any>;
 type Router1Index = Handler1[];
 type RouterXIndex = { [key: string]: HandlerX };
 
-const isHandler1 = (handler: any): handler is Handler1 => !!handler?.tag;
-const isHandlerX = (handler: any): handler is HandlerX => !!handler?.tagX;
+const isHandler1 = (handler: any): handler is Handler1 => !!(handler && handler.tag && handler.read);
+const isHandlerX = (handler: any): handler is HandlerX => !!(handler && handler.tagX && handler.decode);
 
 export interface IReadDriver {
     router1?: ReadRouter1;
@@ -28,10 +28,8 @@ export class ReadDriver implements IReadDriver {
     private iX: RouterXIndex;
 
     constructor(base?: IReadDriver) {
-        const index1: Router1Index = this.i1 = [];
-        const indexX: RouterXIndex = this.iX = {};
-        this.router1 = GEN1(index1, base?.router1);
-        this.routerX = GENX(indexX, base?.routerX);
+        this.router1 = base?.router1;
+        this.routerX = base?.routerX;
     }
 
     export(target: IReadDriver): void {
@@ -57,6 +55,9 @@ export class ReadDriver implements IReadDriver {
         if (Array.isArray(tag)) {
             tag.forEach(t => this.add1(t, handler));
         } else if (tag != null) {
+            if (!this.i1) {
+                this.router1 = GEN1((this.i1 = []), this.router1);
+            }
             this.i1[tag & 255] = handler;
         }
     }
@@ -65,6 +66,9 @@ export class ReadDriver implements IReadDriver {
         if (Array.isArray(tagX)) {
             tagX.forEach(t => this.addX(t, handler));
         } else if (tagX != null) {
+            if (!this.iX) {
+                this.routerX = GENX((this.iX = {}), this.routerX);
+            }
             this.iX[tagX >>> 0] = handler;
         }
     }
@@ -72,9 +76,9 @@ export class ReadDriver implements IReadDriver {
 
 const GEN1 = (index: Router1Index, base: ReadRouter1): ReadRouter1 => {
     if (base) {
-        return tag => (index[tag >>> 0] || base(tag));
+        return tag => (index[tag] || base(tag));
     } else {
-        return tag => index[tag >>> 0];
+        return tag => index[tag];
     }
 };
 
