@@ -8,6 +8,7 @@
  */
 
 import {strict as assert} from "assert";
+import * as fs from "fs";
 import {binjson, binJSON as _binJSON, handlers} from "../";
 import * as JSONB from "json-buffer";
 import * as msglite from "msgpack-lite";
@@ -34,26 +35,12 @@ if (StringBuffer) handler.push(handlers.StringBuffer);
 if (StringNative) handler.push(handlers.StringNative);
 const binJSON = _binJSON.extend({handler});
 
-async function CLI(argv: string[]) {
-    const suite = new Suite();
-    const re = argv.length && argv.map(v => new RegExp(v));
-    prepare((title, name, fn) => {
-        title += " " + name;
-        if (!re || re.some(re => re.test(title))) suite.add(title, fn);
-    });
-    suite.on("cycle", (event: Event) => console.log(String(event.target)));
-    // suite.on("complete", () => console.log('Fastest is ' + suite.filter('fastest').map('name')));
-    await SLEEP(1);
-    suite.run({async: true});
-}
-
-function prepare(add: (title: string, name: string, fn: Function) => void) {
-
+function prepare(bench: Bench): void {
     {
         const array: number[] = [];
         for (let i = 0; i < 256; i++) array.push(i);
         for (let j = 256; j < Number.MAX_SAFE_INTEGER; j *= 2) array.push(j);
-        stringifyTest(`number ${SIZE(array)}`, array);
+        bench.compatBench(`number ${SIZE(array)}`, array);
     }
 
     {
@@ -63,7 +50,7 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
                 array.push(String.fromCharCode(i + 48).repeat(length));
             }
         }
-        stringifyTest(`short OneByteString ${SIZE(array)}`, array);
+        bench.compatBench(`short OneByteString ${SIZE(array)}`, array);
     }
 
     {
@@ -74,7 +61,7 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
                 array.push(String.fromCharCode(i + 0xFF10).repeat(repeat));
             }
         }
-        stringifyTest(`short TwoByteString ${SIZE(array)}`, array);
+        bench.compatBench(`short TwoByteString ${SIZE(array)}`, array);
     }
 
     {
@@ -82,7 +69,7 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
         for (let i = 0; i < 10; i++) { // 256 to 128K
             array.push(String.fromCharCode(i + 48).repeat((2 ** i) * 256));
         }
-        stringifyTest(`long OneByteString ${SIZE(array)}`, array);
+        bench.compatBench(`long OneByteString ${SIZE(array)}`, array);
     }
 
     {
@@ -90,30 +77,39 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
         for (let i = 0; i < 10; i++) {
             array.push(String.fromCharCode(i + 0xFF10).repeat((2 ** i) * 256));
         }
-        stringifyTest(`long TwoByteString ${SIZE(array)}`, array);
+        bench.compatBench(`long TwoByteString ${SIZE(array)}`, array);
     }
 
     {
         const nest = (a: any[]) => [a, a];
         let array: any[] = [];
         for (let i = 0; i < 10; i++) array = nest(array);
-        stringifyTest(`nest Array ${SIZE(array)}`, array);
+        bench.compatBench(`nest Array ${SIZE(array)}`, array);
     }
 
     {
         const nest = (a: object) => ({1: a, 2: a});
         let object = {};
         for (let i = 0; i < 10; i++) object = nest(object);
-        stringifyTest(`nest Object (${SIZE(object)})`, object);
+        bench.compatBench(`nest Object (${SIZE(object)})`, object);
     }
 
-    binaryTest("Buffer 1KB", 1000);
-    binaryTest("Buffer 10KB", 10000);
-    binaryTest("Buffer 100KB", 100000);
-    binaryTest("Buffer 1MB", 1000000);
+    bench.binaryBench("Buffer 1KB", 1000);
+    bench.binaryBench("Buffer 10KB", 10000);
+    bench.binaryBench("Buffer 100KB", 100000);
+    bench.binaryBench("Buffer 1MB", 1000000);
+}
 
-    function stringifyTest(title: string, source: any) {
+class Bench {
+    constructor(private add: (title: string, name: string, fn: Function) => void) {
+        //
+    }
 
+    /**
+     * JSON compatible data benchmarks
+     */
+
+    compatBench(title: string, source: any): void {
         const data = {} as DataSet;
 
         data.binJSON = binJSON.encode(source);
@@ -130,6 +126,7 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
         assert.deepEqual(msglite.decode(data.msglite), source);
         assert.deepEqual(msgpack.decode(data.msgpack), source);
 
+        const {add} = this;
         add(title, "binJSON.encode()", () => binJSON.encode(source));
         add(title, "binJSON.decode()", () => binJSON.decode(data.binJSON));
 
@@ -145,8 +142,11 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
         add(title, "msgpack.decode()", () => msgpack.decode(data.msgpack));
     }
 
-    function binaryTest(title: string, size: number) {
+    /**
+     * Binary data benchmarks
+     */
 
+    binaryBench(title: string, size: number): void {
         const data = {} as DataSet;
         const source = {buffer: Buffer.alloc(size), inline: {type: "Buffer", data: "base64:AAAA"}};
 
@@ -162,6 +162,7 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
             assert.deepEqual(decoded.inline, source.inline);
         }
 
+        const {add} = this;
         add(title, "binJSON.encode()", () => binJSON.encode(source));
         add(title, "binJSON.decode()", () => binJSON.decode(data.binJSON));
         add(title, "EJSON.stringify()", () => EJSON.stringify(source));
@@ -173,6 +174,44 @@ function prepare(add: (title: string, name: string, fn: Function) => void) {
         add(title, "msgpack.encode()", () => msgpack.encode(source));
         add(title, "msgpack.decode()", () => msgpack.decode(data.msgpack));
     }
+}
+
+async function CLI(argv: string[]) {
+    const suite = new Suite();
+
+    const files: string[] = [];
+    const filters: ((v: string) => boolean)[] = [];
+
+    for (const arg of argv) {
+        if (/\.json(\.gz)?$/.test(arg)) {
+            files.push(arg);
+        } else {
+            const re = new RegExp(arg);
+            filters.push(v => re.test(v));
+        }
+    }
+
+    const bench = new Bench((title, name, fn) => {
+        if (name) title += name;
+        if (!filters.length || filters.some(filter => filter(title))) suite.add(title, fn);
+    });
+
+    if (files.length) {
+        for (const file of files) {
+            const title = file.split("/").pop();
+            let raw = fs.readFileSync(file);
+            if (/\.gz$/.test(file)) raw = require("zlib").gunzipSync(raw);
+            bench.compatBench(title, JSON.parse(raw as any));
+        }
+    } else {
+        prepare(bench);
+    }
+
+    suite.on("cycle", (event: Event) => console.log(String(event.target)));
+
+    await SLEEP(1);
+
+    suite.run({async: true});
 }
 
 Promise.resolve(process.argv.slice(2)).then(CLI).catch(console.error);
